@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="30 44 1012 232" role="img" aria-label="ACUTE">
+  <title>ACUTE</title>
+  <g fill="none" stroke="#B23A2E" stroke-width="27" stroke-linejoin="miter" stroke-miterlimit="4">
+    <!-- A -->
+    <!-- C -->
+    <path d="M384 114 A80 80 0 1 0 384 240"/>
+    <!-- U -->
+    <path d="M485 88 V196 A56 56 0 0 0 597 196 V88"/>
+    <!-- E -->
+    <path d="M1030 101.5 H921.5 V252.5 H1032"/>
+    <path d="M921 180 H1016"/>
+  </g>
+  <!-- T : tapered stem with curled foot + ribbon (infinity) crossbar -->
+  <g fill="#B23A2E">
+    <!-- A -->
+    <path fill-rule="evenodd" d="M36 266 L98 88 H124 L188 266 H159 L144 222 H78 L63 266 Z M85 199 H137 L111 124 Z"/>
+    <path d="M762 50 C763 76 770 104 770 140 L770 214 C770 246 780 260 802 263 L801 266.5 C766 266.5 753 250 753 218 L753 140 C754 104 760 76 762 50 Z"/>
+  </g>
+  <path fill="none" stroke="#B23A2E" stroke-width="4.5" stroke-linecap="round"
+        d="M762 99 C742 86 678 84 666 94 C656 104 700 110 762 99 C824 88 846 92 848 99 C850 108 792 112 762 99 Z"/>
+</svg>

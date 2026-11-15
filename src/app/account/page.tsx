@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { signOut } from "@/app/actions/auth";
 import { ConnectMembership } from "@/components/account/ConnectMembership";
+import { ProductImage } from "@/components/product/ProductImage";
 import { requireUser } from "@/lib/auth";
+import { getProducts } from "@/lib/products";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { cn, formatTHB } from "@/lib/utils";
 
@@ -46,6 +48,11 @@ export default async function AccountPage({ searchParams }: Props) {
     .select("id, created_at, amount_total, status, order_items(name, quantity)")
     .order("created_at", { ascending: false })) ?? { data: null };
   const orders = (data ?? []) as OrderRow[];
+  // A few photographed pieces to fill the empty Orders tab
+  const picks =
+    tab === "orders" && orders.length === 0
+      ? (await getProducts()).filter((p) => p.image_url && (p.status ?? "active") === "active").slice(0, 4)
+      : [];
 
   // Null until supabase/schema.sql's membership columns exist
   const { data: profile } = ((await supabase
@@ -64,8 +71,11 @@ export default async function AccountPage({ searchParams }: Props) {
           <h1 className="heading-section mt-3">Hello{user.fullName ? `, ${user.fullName}` : ""}</h1>
           <p className="mt-3 text-sm text-acute-ink/60">{user.email}</p>
         </div>
+        {/* Kept quiet so it isn't hit by accident */}
         <form action={signOut}>
-          <button className="btn-outline py-3">Sign out</button>
+          <button className="text-xs text-acute-ink/60 underline underline-offset-4 transition-colors hover:text-acute-ink">
+            Sign out
+          </button>
         </form>
       </div>
 
@@ -140,12 +150,30 @@ export default async function AccountPage({ searchParams }: Props) {
           </div>
         </section>
       ) : orders.length === 0 ? (
-        <p className="mt-8 text-sm text-acute-ink/60">
-          No orders yet.{" "}
-          <Link href="/#shop" className="underline underline-offset-4 hover:text-acute-red">
+        <div className="mt-8 rounded-card border border-acute-line bg-acute-cream-light px-6 py-10 text-center tab:px-8 tab:py-12">
+          <p className="eyebrow">No orders yet</p>
+          <h2 className="mt-3 font-serif text-2xl uppercase tracking-tight">Ready to shop?</h2>
+          <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-acute-ink/70">
+            Your orders will appear here once you&apos;ve placed one.
+          </p>
+          <Link href="/products" className="btn-primary mt-7">
             Start shopping
           </Link>
-        </p>
+          {picks.length > 0 && (
+            <ul className="mx-auto mt-10 grid max-w-md grid-cols-4 gap-2 tab:gap-3">
+              {picks.map((p) => (
+                <li key={p.id}>
+                  <Link
+                    href={`/products/${p.slug}`}
+                    className="block aspect-[4/5] overflow-hidden rounded-[0.75rem] transition-opacity hover:opacity-80"
+                  >
+                    <ProductImage src={p.image_url} alt={p.name} category={p.category} sizes="112px" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       ) : (
         <ul className="mt-8 divide-y divide-acute-stone/40 border-y border-acute-stone/40">
           {orders.map((order) => (

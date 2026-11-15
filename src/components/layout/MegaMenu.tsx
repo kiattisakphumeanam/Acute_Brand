@@ -40,7 +40,7 @@ export function MegaMenu({ active, onEnter, onLeave, onNavigate }: Props) {
                       <Link
                         href={link.href}
                         onClick={onNavigate}
-                        className="font-serif text-[1.375rem] leading-tight transition-colors hover:text-acute-red"
+                        className="font-serif text-[1.375rem] leading-tight decoration-1 underline-offset-[0.3em] transition-colors hover:text-acute-red hover:underline"
                       >
                         {link.label}
                       </Link>

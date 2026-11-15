@@ -32,7 +32,8 @@ export function ProductTag({ product, className }: { product: Product; className
   );
 }
 
-export function ProductCard({ product }: { product: Product }) {
+/** `minimal` (home page) keeps the photo, name and price; colours and sizes are left to /products and the detail page. */
+export function ProductCard({ product, minimal = false }: { product: Product; minimal?: boolean }) {
   const { t } = useTranslation();
   const price = usePrice();
   const openQuickView = useUI((s) => s.openQuickView);
@@ -85,7 +86,7 @@ export function ProductCard({ product }: { product: Product }) {
         </p>
       </div>
 
-      {(colors.length > 0 || sizes.length > 0) && (
+      {!minimal && (colors.length > 0 || sizes.length > 0) && (
         <div className="mt-auto flex items-center justify-between gap-3 pt-2.5">
           {colors.length > 0 && (
             <ul className="flex shrink-0 gap-1.5" aria-label={t.quick.colors(colors.length)}>

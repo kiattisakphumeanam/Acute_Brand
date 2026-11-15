@@ -8,12 +8,12 @@ export interface MenuGroup {
   columns: { title: string; links: { label: string; href: string }[] }[];
 }
 
-/** One link per shop category; ?category= preselects the tab in the product grid. */
+/** One link per shop category; ?category= preselects the tab on /products. */
 const CATEGORY_LINKS = [
-  { label: "Top", href: "/?category=tops#shop" },
-  { label: "Match Set", href: "/?category=match_set#shop" },
-  { label: "Skirt", href: "/?category=skirt#shop" },
-  { label: "Skort", href: "/?category=skort#shop" },
+  { label: "Top", href: "/products?category=tops" },
+  { label: "Match Set", href: "/products?category=match_set" },
+  { label: "Skirt", href: "/products?category=skirt" },
+  { label: "Skort", href: "/products?category=skort" },
 ];
 
 export const MENU: MenuGroup[] = [

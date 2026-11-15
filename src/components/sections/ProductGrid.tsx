@@ -12,7 +12,7 @@ import { CATEGORIES, type Category, type Moment, type Product } from "@/types/pr
 interface Props {
   products: Product[];
   initialCategory?: Category | "all";
-  /** Home page: one row, then a link to the full /products page. */
+  /** Home page: one row of simplified cards and a link to /products, without the category filter. */
   preview?: boolean;
   /** /products?moment=…: products are already filtered; titles the page and links back to everything. */
   moment?: Moment;
@@ -40,15 +40,12 @@ export function ProductGrid({ products, initialCategory = "all", preview = false
   // Preview shows one row at every breakpoint: 2, 3 and 4 columns → 2, 3 and 4 cards
   const hiddenFrom = (i: number) =>
     !preview ? "" : i >= 4 ? "hidden" : i >= 3 ? "hidden desk:block" : i >= 2 ? "hidden tab:block" : "";
-  const seeMoreClass =
-    visible.length > 4 ? "" : visible.length > 3 ? "desk:hidden" : visible.length > 2 ? "tab:hidden" : null;
-  const seeMoreHref = active === "all" ? "/products" : `/products?category=${active}`;
 
   const Heading = preview ? "h2" : "h1";
 
   return (
     <section id="shop" className={cn("container-acute", preview ? "py-12 tab:py-14 desk:py-16" : "pb-12 pt-10 tab:pt-12 desk:pb-16 desk:pt-14")}>
-      <div className="rv flex flex-col justify-between gap-6 desk:flex-row desk:items-end">
+      <div className={cn("rv flex justify-between gap-6", preview ? "items-end" : "flex-col desk:flex-row desk:items-end")}>
         <div>
           <p className="eyebrow">{moment ? t.home.moments.title : t.home.shop.eyebrow}</p>
           <Heading className="heading-section mt-3">
@@ -66,29 +63,26 @@ export function ProductGrid({ products, initialCategory = "all", preview = false
             </>
           )}
         </div>
-        <CategoryTabs options={options} active={active} onChange={setActive} label={t.catalog.filterLabel} />
+        {preview ? (
+          <Link href="/products" className="btn-ghost group shrink-0">
+            {t.home.shop.viewAll}
+            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+          </Link>
+        ) : (
+          <CategoryTabs options={options} active={active} onChange={setActive} label={t.catalog.filterLabel} />
+        )}
       </div>
 
       {visible.length === 0 ? (
         <p className="mt-10 text-sm text-acute-ink-light">{t.catalog.empty}</p>
       ) : (
-        <>
-          <div className="mt-8 grid grid-cols-2 gap-x-3 gap-y-8 tab:mt-10 tab:grid-cols-3 tab:gap-x-5 desk:grid-cols-4 desk:gap-x-6 desk:gap-y-10">
-            {visible.map((product, i) => (
-              <div key={product.id} className={hiddenFrom(i)}>
-                <ProductCard product={product} />
-              </div>
-            ))}
-          </div>
-          {preview && seeMoreClass !== null && (
-            <div className={cn("mt-10 flex justify-center", seeMoreClass)}>
-              <Link href={seeMoreHref} className="btn-outline group">
-                {t.catalog.seeMore}
-                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-              </Link>
+        <div className="mt-8 grid grid-cols-2 gap-x-3 gap-y-8 tab:mt-10 tab:grid-cols-3 tab:gap-x-5 desk:grid-cols-4 desk:gap-x-6 desk:gap-y-10">
+          {visible.map((product, i) => (
+            <div key={product.id} className={hiddenFrom(i)}>
+              <ProductCard product={product} minimal={preview} />
             </div>
-          )}
-        </>
+          ))}
+        </div>
       )}
     </section>
   );

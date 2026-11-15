@@ -21,8 +21,7 @@ export async function Moments() {
   return (
     <section id="moments" className="container-acute py-12 tab:py-14 desk:py-16">
       <div className="rv text-center">
-        <p className="eyebrow">{t.eyebrow}</p>
-        <h2 className="heading-section mt-3">{t.title}</h2>
+        <h2 className="heading-section">{t.title}</h2>
       </div>
 
       {/* One card per row on phones, two on tablet, four on desktop */}

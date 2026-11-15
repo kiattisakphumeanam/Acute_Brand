@@ -144,7 +144,6 @@ const en = {
       ],
     },
     moments: {
-      eyebrow: "Dress the day",
       title: "Shop by moment",
       items: {
         Work: "Sharp enough for the meeting, easy enough for the commute.",
@@ -456,7 +455,6 @@ const th: Dictionary = {
       ],
     },
     moments: {
-      eyebrow: "แต่งตัวให้เข้ากับวัน",
       title: "ช้อปตามโอกาส",
       items: {
         Work: "ดูดีพอสำหรับประชุม สบายพอสำหรับการเดินทาง",

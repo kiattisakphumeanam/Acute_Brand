@@ -32,8 +32,8 @@ export function memberDiscount(subtotalTHB: number, status: MemberStatus | null)
   };
 }
 
-/** Points this order earns (on the amount actually paid). ACUTE tier members earn 1.5 per THB 100. */
-export function pointsFor(paidTHB: number, status: MemberStatus | null) {
+/** Points this order earns (on the subtotal, before member discounts). ACUTE tier members earn 1.5 per THB 100. */
+export function pointsFor(subtotalTHB: number, status: MemberStatus | null) {
   const acute = (status?.points ?? 0) >= MEMBERSHIP.tiers[0].minPoints;
-  return Math.floor(paidTHB / 100) * (acute ? MEMBERSHIP.acutePointsPer100 : MEMBERSHIP.pointsPer100);
+  return Math.floor(subtotalTHB / 100) * (acute ? MEMBERSHIP.acutePointsPer100 : MEMBERSHIP.pointsPer100);
 }

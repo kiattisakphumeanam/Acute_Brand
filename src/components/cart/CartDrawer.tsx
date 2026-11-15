@@ -62,7 +62,7 @@ export function CartDrawer() {
   // Same rule checkout applies (src/lib/membership.ts), so the total here is what Stripe charges
   const discount = memberDiscount(subtotal, member);
   const total = subtotal - (discount?.amount ?? 0);
-  const points = pointsFor(total, member);
+  const points = pointsFor(subtotal, member);
 
   return (
     <div className={cn("fixed inset-0 z-[60] overflow-hidden", !isOpen && "pointer-events-none")} inert={!isOpen}>

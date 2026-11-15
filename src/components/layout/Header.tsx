@@ -154,7 +154,7 @@ export function Header() {
             </button>
             <Link
               href={user ? "/account" : "/login"}
-              className={cn(actionClass, "hidden tab:flex")}
+              className={actionClass}
               aria-label={user ? t.nav.account : t.nav.signIn}
             >
               <User className={iconClass} strokeWidth={1.4} />

@@ -154,12 +154,6 @@ const en = {
       } satisfies Record<Moment, string>,
       shop: "Shop",
     },
-    stores: {
-      eyebrow: "Visit us",
-      title: "Store locations",
-      cta: "More details",
-      hours: (opens: string, closes: string) => `Open daily ${opens} to ${closes}`,
-    },
     features: [
       { title: "Free shipping in Thailand", body: "On every order, in 2 to 4 working days." },
       { title: "Shipping worldwide", body: "Tracked delivery to 40+ countries." },
@@ -296,7 +290,6 @@ const en = {
     legalCol: "Legal",
     newIn: "New in",
     allItems: "All items",
-    stores: "Stores",
     membership: "Membership",
     contact: "Contact",
     faq: "FAQ",
@@ -473,12 +466,6 @@ const th: Dictionary = {
       },
       shop: "ช้อป",
     },
-    stores: {
-      eyebrow: "แวะมาหาเรา",
-      title: "สาขาของเรา",
-      cta: "ดูรายละเอียด",
-      hours: (opens, closes) => `เปิดทุกวัน ${opens} ถึง ${closes} น.`,
-    },
     features: [
       { title: "ส่งฟรีทั่วไทย", body: "ทุกออเดอร์ จัดส่งภายใน 2 ถึง 4 วันทำการ" },
       { title: "จัดส่งทั่วโลก", body: "ติดตามพัสดุได้ มากกว่า 40 ประเทศ" },
@@ -615,7 +602,6 @@ const th: Dictionary = {
     legalCol: "กฎหมาย",
     newIn: "มาใหม่",
     allItems: "สินค้าทั้งหมด",
-    stores: "สาขา",
     membership: "สมาชิก",
     contact: "ติดต่อเรา",
     faq: "คำถามที่พบบ่อย",

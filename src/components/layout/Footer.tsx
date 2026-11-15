@@ -22,7 +22,6 @@ export async function Footer() {
       title: t.companyCol,
       links: [
         { label: t.about, href: "/about" },
-        { label: t.stores, href: "/#stores" },
         { label: t.membership, href: "/membership" },
       ],
     },

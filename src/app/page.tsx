@@ -3,7 +3,6 @@ import { FeatureRow } from "@/components/sections/FeatureRow";
 import { Hero } from "@/components/sections/Hero";
 import { Moments } from "@/components/sections/Moments";
 import { ProductGrid } from "@/components/sections/ProductGrid";
-import { StoreList } from "@/components/sections/StoreList";
 import { getProducts } from "@/lib/products";
 import { CATEGORIES, type Category } from "@/types/product";
 
@@ -22,7 +21,6 @@ export default async function HomePage({ searchParams }: Props) {
       <ProductGrid key={initialCategory} products={products} initialCategory={initialCategory} preview />
       <Moments />
       <BrandStory />
-      <StoreList />
       <FeatureRow />
     </>
   );

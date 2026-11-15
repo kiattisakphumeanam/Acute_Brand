@@ -87,7 +87,6 @@ export const MENU: MenuGroup[] = [
         links: [
           { label: "About", href: "/about" },
           { label: "Membership", href: "/signup" },
-          { label: "Stores", href: "/#stores" },
         ],
       },
     ],
@@ -98,13 +97,6 @@ export const SOCIALS = [
   { label: "Instagram", href: "https://www.instagram.com/acute.official_" },
 ];
 
-
-export const STORES = [
-  { name: "ACUTE Siam", area: "Siam Discovery, 3F", city: "Bangkok", opens: "10:00", closes: "22:00" },
-  { name: "ACUTE Thonglor", area: "The Commons, G", city: "Bangkok", opens: "10:00", closes: "21:00" },
-  { name: "ACUTE Iconsiam", area: "Iconsiam, 2F", city: "Bangkok", opens: "10:00", closes: "22:00" },
-  { name: "ACUTE Nimman", area: "One Nimman, 1F", city: "Chiang Mai", opens: "11:00", closes: "21:00" },
-];
 
 /** Countdown target for the next collection drop. */
 export const LAUNCH_AT = "2026-12-12T10:00:00+07:00";

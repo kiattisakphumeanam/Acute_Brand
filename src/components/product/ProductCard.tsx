@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useCart } from "@/components/cart/CartProvider";
 import { useTranslation } from "@/components/i18n/LanguageProvider";
 import { ProductImage } from "@/components/product/ProductImage";
 import { usePrice, useUI } from "@/lib/ui-store";
@@ -37,8 +38,22 @@ export function ProductCard({ product, minimal = false }: { product: Product; mi
   const { t } = useTranslation();
   const price = usePrice();
   const openQuickView = useUI((s) => s.openQuickView);
+  const showToast = useUI((s) => s.showToast);
+  const { add, open: openCart } = useCart();
   const colors = product.colors ?? [];
   const sizes = product.sizes ?? [];
+  const canBuy = (product.status ?? "active") === "active";
+
+  // One size left to choose (or none at all) goes straight to the bag; otherwise pick a size in quick view
+  const addToBag = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const available = sizes.filter((s) => !product.sold_out_sizes?.includes(s));
+    if (available.length > 1) return openQuickView(product);
+    add(product, available[0]);
+    showToast(t.quick.addedToast(product.name));
+    openCart();
+  };
 
   return (
     <article className="group flex h-full flex-col">
@@ -74,16 +89,32 @@ export function ProductCard({ product, minimal = false }: { product: Product; mi
         </button>
       </div>
 
-      {/* Phones: price under the name, so the name gets the card's full width. Side by side from tablet. */}
-      <div className="mt-3 flex flex-col gap-1 tab:mt-4 tab:flex-row tab:items-start tab:justify-between tab:gap-3">
+      <div className="mt-3 flex flex-col items-start gap-1 text-left">
         <h3 className="font-serif text-[1rem] leading-snug tab:text-[1.125rem]">
           <Link href={`/products/${product.slug}`} className="hover:text-acute-red">
             {product.name}
           </Link>
         </h3>
-        <p className="whitespace-nowrap text-[length:max(0.8125rem,12px)] tabular-nums tab:pt-0.5">
-          {price(product.price)}
-        </p>
+        {/* Hovering the card slides the price up and "Add to bag" in. Touch screens (no hover) keep the price. */}
+        <div className="relative h-6 w-full overflow-hidden">
+          <p
+            className={cn(
+              "flex h-6 items-center whitespace-nowrap text-[length:max(0.8125rem,12px)] tabular-nums transition-transform duration-500 ease-soft",
+              canBuy && "group-focus-within:-translate-y-full [@media(hover:hover)]:group-hover:-translate-y-full",
+            )}
+          >
+            {price(product.price)}
+          </p>
+          {canBuy && (
+            <button
+              type="button"
+              onClick={addToBag}
+              className="absolute inset-x-0 top-0 flex h-6 translate-y-full items-center text-[length:max(0.6875rem,10px)] font-semibold uppercase tracking-[0.2em] text-acute-red underline underline-offset-4 transition-transform duration-500 ease-soft hover:text-acute-red-dark focus-visible:outline-none group-focus-within:translate-y-0 [@media(hover:hover)]:group-hover:translate-y-0"
+            >
+              {t.quick.addToBag}
+            </button>
+          )}
+        </div>
       </div>
 
       {!minimal && (colors.length > 0 || sizes.length > 0) && (

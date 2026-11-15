@@ -1,10 +1,9 @@
-import type { PlaceholderTone } from "@/components/ui/EditorialPlaceholder";
-
 /** Mega-menu groups. Labels stay in English in both locales, like the brand's tags. */
 export interface MenuGroup {
   label: string;
   href: string;
-  feature: { title: string; tone: PlaceholderTone; href: string };
+  /** Shown full-bleed on the dropdown's right half; image is a path under public/. */
+  feature: { title: string; image: string; href: string };
   columns: { title: string; links: { label: string; href: string }[] }[];
 }
 
@@ -20,7 +19,7 @@ export const MENU: MenuGroup[] = [
   {
     label: "New In",
     href: "/#shop",
-    feature: { title: "The Intentional Edit", tone: "blue", href: "/#shop" },
+    feature: { title: "The Intentional Edit", image: "/story/story2.jpg", href: "/#shop" },
     columns: [
       {
         title: "Shop by Collection",
@@ -39,7 +38,7 @@ export const MENU: MenuGroup[] = [
   {
     label: "Clothing",
     href: "/#shop",
-    feature: { title: "Everyday Essentials", tone: "sand", href: "/#shop" },
+    feature: { title: "Everyday Essentials", image: "/moments/work.jpg", href: "/#shop" },
     columns: [
       {
         title: "Shop by Category",
@@ -50,7 +49,7 @@ export const MENU: MenuGroup[] = [
   {
     label: "Moments",
     href: "/#moments",
-    feature: { title: "Work to Evening", tone: "stone", href: "/#moments" },
+    feature: { title: "Work to Evening", image: "/moments/weekend.jpg", href: "/#moments" },
     columns: [
       {
         title: "Dress for",
@@ -66,7 +65,7 @@ export const MENU: MenuGroup[] = [
   {
     label: "Lookbook",
     href: "/#story",
-    feature: { title: "Our Story", tone: "blue", href: "/#story" },
+    feature: { title: "Our Story", image: "/story/story1.jpg", href: "/#story" },
     columns: [
       {
         title: "Stories",
@@ -80,7 +79,7 @@ export const MENU: MenuGroup[] = [
   {
     label: "Info",
     href: "/about",
-    feature: { title: "The Circle", tone: "ink", href: "/signup" },
+    feature: { title: "The Circle", image: "/moments/evening.jpg", href: "/signup" },
     columns: [
       {
         title: "ACUTE",

@@ -1,9 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { useTranslation } from "@/components/i18n/LanguageProvider";
-import { EditorialPlaceholder } from "@/components/ui/EditorialPlaceholder";
 import { MENU } from "@/data/storefront";
 import { cn } from "@/lib/utils";
 
@@ -14,7 +13,7 @@ interface Props {
   onNavigate: () => void;
 }
 
-/** Full-width dropdown under the desktop nav: link columns on the left, a featured arch image on the right. */
+/** Full-width dropdown under the desktop nav: link columns on the left, a full-bleed featured photo on the right. */
 export function MegaMenu({ active, onEnter, onLeave, onNavigate }: Props) {
   const { t } = useTranslation();
 
@@ -29,8 +28,9 @@ export function MegaMenu({ active, onEnter, onLeave, onNavigate }: Props) {
       inert={active === null}
     >
       {MENU.map((group, i) => active === i && (
-        <div key={group.label} className="container-acute grid gap-16 py-12 desk:grid-cols-[1fr_27.5rem]">
-          <div className="flex gap-20">
+        <div key={group.label} className="grid desk:grid-cols-[45fr_55fr]">
+          {/* Left edge lines up with the header's container (max 85rem, 3rem gutter) */}
+          <div className="flex gap-16 px-8 py-10 desk:gap-20 desk:border-r desk:border-acute-line desk:py-12 desk:pl-[max(3rem,calc((100vw-85rem)/2+3rem))] desk:pr-12">
             {group.columns.map((col) => (
               <div key={col.title}>
                 <p className="eyebrow">{col.title}</p>
@@ -51,17 +51,21 @@ export function MegaMenu({ active, onEnter, onLeave, onNavigate }: Props) {
             ))}
           </div>
 
-          <Link href={group.feature.href} onClick={onNavigate} className="group hidden items-end gap-6 desk:flex">
-            <EditorialPlaceholder
-              tone={group.feature.tone}
-              label={group.feature.title}
-              className="h-[12rem] w-[8.5rem] shrink-0 rounded-arch"
-            />
-            <div className="pb-2">
-              <p className="caps text-[1.625rem]">{group.feature.title}</p>
-              <span className="mt-4 inline-flex items-center gap-2 text-[length:max(0.75rem,10px)] font-semibold uppercase tracking-[0.2em] text-acute-red">
+          <Link
+            href={group.feature.href}
+            onClick={onNavigate}
+            className="group relative hidden min-h-[22rem] overflow-hidden desk:block"
+          >
+            {/* Wider than the panel: the square lookbook photos carry white side margins (~11%) that would show here */}
+            <div className="absolute inset-y-0 -inset-x-[16%] transition-transform duration-700 ease-soft group-hover:scale-[1.03]">
+              <Image src={group.feature.image} alt="" fill sizes="75vw" className="object-cover object-[50%_15%]" />
+            </div>
+            {/* Darkens the lower edge just enough for white type on light photos */}
+            <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-acute-ink/65 via-acute-ink/15 to-transparent" />
+            <div className="absolute inset-x-10 bottom-10 text-acute-cream">
+              <p className="caps text-[2rem] leading-none">{group.feature.title}</p>
+              <span className="mt-5 inline-flex rounded-full border border-acute-cream/80 px-6 py-[0.625rem] text-[length:max(0.6875rem,10px)] font-semibold uppercase tracking-[0.2em] transition-colors duration-300 group-hover:bg-acute-cream group-hover:text-acute-ink">
                 {t.header.shopNow}
-                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
               </span>
             </div>
           </Link>

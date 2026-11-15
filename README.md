@@ -18,6 +18,8 @@ It runs right away on mock products; checkout stays off until you add Stripe key
 3. **Stripe:** add `STRIPE_SECRET_KEY`. For order syncing, run
    `stripe listen --forward-to localhost:3000/api/stripe/webhook` and paste the `whsec_…` it prints into `STRIPE_WEBHOOK_SECRET`.
    Turn on PromptPay in Stripe Dashboard → Payment methods if you want Thai QR payments.
+4. **Membership sheet (optional):** members who connect from `/account` are also written to a Google Sheet, one row per account.
+   Follow the setup steps at the top of `scripts/membership-sheet.gs`, then set `MEMBERSHIP_SHEET_URL` and `MEMBERSHIP_SHEET_SECRET`.
 
 ## Auth & roles
 
@@ -29,7 +31,7 @@ It runs right away on mock products; checkout stays off until you add Stripe key
 
 - Supabase Auth (email + password) via `@supabase/ssr`. `src/middleware.ts` refreshes the session and sends signed-out visitors from `/account` and `/admin` to `/login`.
 - Server code checks the role through `getCurrentUser()`, `requireUser()` and `requireAdmin()` in `src/lib/auth.ts`. RLS policies in `schema.sql` apply the same rules a second time in the database.
-- Users can't promote themselves: they only have column grants for `full_name` and `phone`.
+- Users can't promote themselves: they only have column grants for `full_name`, `phone`, `birthday` and `member_since`.
 - **First admin:** sign up on the site, then run the `update public.profiles set role = 'admin' …` snippet at the bottom of `schema.sql`.
 - Supabase → Authentication → URL Configuration: add `http://localhost:3000/auth/callback` (and your production URL) to the redirect URLs.
 

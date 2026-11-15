@@ -46,7 +46,7 @@ export function CurrencySelect() {
   const setCurrency = useUI((s) => s.setCurrency);
 
   return (
-    <label className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-acute-cream/60">
+    <label className="flex items-center gap-3 text-[length:max(0.6875rem,10px)] font-semibold uppercase tracking-[0.2em] text-acute-cream/60">
       {t.currency}
       <select
         value={currency}

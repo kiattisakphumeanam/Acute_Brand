@@ -12,9 +12,9 @@ import { MemberModal } from "@/components/overlays/MemberModal";
 import { QuickViewModal } from "@/components/overlays/QuickViewModal";
 import { SearchOverlay } from "@/components/overlays/SearchOverlay";
 import { Toast } from "@/components/overlays/Toast";
+import { PhilosophyMarquee } from "@/components/sections/PhilosophyMarquee";
 import { CurrencyInit } from "@/components/ui/CurrencyInit";
 import { RevealObserver } from "@/components/ui/RevealObserver";
-import { WishlistProvider } from "@/components/wishlist/WishlistProvider";
 import { CURRENCY_COOKIE, isCurrency } from "@/data/storefront";
 import { getCurrentUser } from "@/lib/auth";
 import { getLocale } from "@/lib/i18n/server";
@@ -44,7 +44,7 @@ const thai = Noto_Sans_Thai({
 });
 
 export const metadata: Metadata = {
-  title: "ACUTE — Intentional in-between",
+  title: "ACUTE | Intentional in-between",
   description:
     "Minimalist womenswear for the intentional in-between. Clear, confident, intentional pieces made for everyday self-expression.",
 };
@@ -65,18 +65,17 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <LanguageProvider initialLocale={locale}>
           <AuthProvider user={user}>
             <CartProvider>
-              <WishlistProvider>
-                <PromoMarquee />
-                <Header />
-                <main>{children}</main>
-                <Footer />
-                <CartDrawer />
-                <QuickViewModal />
-                <SearchOverlay products={products} />
-                <MemberModal />
-                <Toast />
-                <RevealObserver />
-              </WishlistProvider>
+              <PromoMarquee />
+              <Header />
+              <main>{children}</main>
+              <Footer />
+              <PhilosophyMarquee />
+              <CartDrawer />
+              <QuickViewModal />
+              <SearchOverlay products={products} />
+              <MemberModal />
+              <Toast />
+              <RevealObserver />
             </CartProvider>
           </AuthProvider>
         </LanguageProvider>

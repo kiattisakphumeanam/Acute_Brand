@@ -15,7 +15,7 @@ export const mockProducts: Product[] = [
     slug: "still-scene-maxi-skirt",
     name: "Still Scene Maxi Skort",
     description:
-      "Tiered maxi skort in crinkled voile with ruched bands and an elastic waist. Free size — waist 24–42\", hips 46\", length 31.5\".",
+      "Tiered maxi skort in crinkled voile with ruched bands and an elastic waist. Free size, waist 24 to 42\", hips 46\", length 31.5\".",
     price: 1890, // TODO: real price
     category: "skort",
     image_url: null,

@@ -66,7 +66,7 @@ export function SearchOverlay({ products }: { products: Product[] }) {
               onChange={(e) => setQuery(e.target.value)}
               placeholder={t.search.placeholder}
               aria-label={t.search.placeholder}
-              className="min-w-0 flex-1 bg-transparent font-serif text-[24px] outline-none placeholder:text-acute-stone tab:text-[32px]"
+              className="min-w-0 flex-1 bg-transparent font-serif text-[1.5rem] outline-none placeholder:text-acute-stone tab:text-[2rem]"
             />
             <button
               onClick={() => setOpen(false)}
@@ -85,7 +85,7 @@ export function SearchOverlay({ products }: { products: Product[] }) {
                   <button
                     key={s}
                     onClick={() => setQuery(s)}
-                    className="rounded-full border border-acute-line bg-acute-cream-light px-5 py-2.5 text-[12px] font-semibold uppercase tracking-[0.2em] hover:border-acute-ink"
+                    className="rounded-full border border-acute-line bg-acute-cream-light px-5 py-2.5 text-[length:max(0.75rem,10px)] font-semibold uppercase tracking-[0.2em] hover:border-acute-ink"
                   >
                     {s}
                   </button>
@@ -110,7 +110,7 @@ export function SearchOverlay({ products }: { products: Product[] }) {
                       <div className="aspect-[3/4] overflow-hidden rounded-card">
                         <ProductImage src={p.image_url} alt={p.name} category={p.category} sizes="200px" />
                       </div>
-                      <p className="mt-2 font-serif text-[17px] leading-tight group-hover:text-acute-red">{p.name}</p>
+                      <p className="mt-2 font-serif text-[1.0625rem] leading-tight group-hover:text-acute-red">{p.name}</p>
                       <p className="mt-0.5 text-xs text-acute-ink-light">{price(p.price)}</p>
                     </button>
                   </li>

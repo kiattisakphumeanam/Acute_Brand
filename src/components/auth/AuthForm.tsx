@@ -23,7 +23,7 @@ export function AuthForm({
   return (
     <div className="w-full max-w-sm">
       <p className="eyebrow">{mode === "login" ? "Welcome back" : "Join ACUTE"}</p>
-      <h1 className="heading-display mt-4 text-4xl sm:text-5xl">
+      <h1 className="heading-section mt-3">
         {mode === "login" ? "Sign in" : "Create account"}
       </h1>
 

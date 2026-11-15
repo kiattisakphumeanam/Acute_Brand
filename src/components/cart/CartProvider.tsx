@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useUser } from "@/components/auth/AuthProvider";
-import type { CartLine, Product, WishlistItem } from "@/types/product";
+import type { CartLine, Product } from "@/types/product";
 
 const STORAGE_PREFIX = "acute-cart";
 const MAX_QTY = 10;
@@ -18,7 +18,7 @@ interface CartContextValue {
   hydrated: boolean;
   open: () => void;
   close: () => void;
-  add: (product: Product | WishlistItem, size?: string) => void;
+  add: (product: Product, size?: string) => void;
   /** Lines are addressed by `key` (product id + size). */
   setQuantity: (key: string, quantity: number) => void;
   remove: (key: string) => void;
@@ -70,7 +70,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const canShop = Boolean(user);
 
   const add = useCallback(
-    (product: Product | WishlistItem, size?: string) => {
+    (product: Product, size?: string) => {
       if (!canShop) return;
       const key = lineKey(product.id, size);
       setLines((prev) => {

@@ -10,6 +10,8 @@ interface UIState {
   quickView: Product | null;
   toast: { id: number; message: string } | null;
   currency: Currency;
+  /** Tone of the hero slide on screen — the home page header takes its colour from it. */
+  heroTone: HeroTone;
   setSearchOpen: (open: boolean) => void;
   setMemberOpen: (open: boolean) => void;
   openQuickView: (product: Product) => void;
@@ -17,7 +19,10 @@ interface UIState {
   showToast: (message: string) => void;
   hideToast: () => void;
   setCurrency: (currency: Currency) => void;
+  setHeroTone: (heroTone: HeroTone) => void;
 }
+
+export type HeroTone = "dark" | "light" | "light-on-phones";
 
 export const useUI = create<UIState>((set) => ({
   searchOpen: false,
@@ -25,6 +30,7 @@ export const useUI = create<UIState>((set) => ({
   quickView: null,
   toast: null,
   currency: "THB",
+  heroTone: "dark",
   setSearchOpen: (searchOpen) => set({ searchOpen }),
   setMemberOpen: (memberOpen) => set({ memberOpen }),
   openQuickView: (quickView) => set({ quickView }),
@@ -35,6 +41,7 @@ export const useUI = create<UIState>((set) => ({
     document.cookie = `${CURRENCY_COOKIE}=${currency}; path=/; max-age=31536000; samesite=lax`;
     set({ currency });
   },
+  setHeroTone: (heroTone) => set({ heroTone }),
 }));
 
 

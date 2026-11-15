@@ -38,7 +38,7 @@ export function EditorialPlaceholder({ tone = "blue", caption, label, className 
       {caption && (
         <span
           className={cn(
-            "absolute bottom-4 left-4 text-[10px] font-semibold uppercase tracking-[0.24em]",
+            "absolute bottom-4 left-4 text-[length:max(0.625rem,10px)] font-semibold uppercase tracking-[0.24em]",
             t.text,
           )}
         >

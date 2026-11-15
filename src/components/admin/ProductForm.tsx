@@ -11,8 +11,8 @@ export type AdminProduct = Product & { is_active: boolean; sort_order: number };
 const CATEGORY_LABELS = dictionaries.en.categories;
 
 export const inputClass =
-  "mt-2 w-full rounded-[14px] border border-acute-line bg-acute-cream-light px-4 py-2.5 text-sm font-light normal-case tracking-normal outline-none transition-colors focus:border-acute-ink";
-export const labelClass = "block text-[11px] font-semibold uppercase tracking-[0.2em]";
+  "mt-2 w-full rounded-[0.875rem] border border-acute-line bg-acute-cream-light px-4 py-2.5 text-sm font-light normal-case tracking-normal outline-none transition-colors focus:border-acute-ink";
+export const labelClass = "block text-[length:max(0.6875rem,10px)] font-semibold uppercase tracking-[0.2em]";
 const hintClass = "font-light normal-case tracking-normal text-acute-ink/50";
 
 /** Add and edit share one form; pass `product` to edit. */
@@ -27,7 +27,7 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
         <input name="name" required defaultValue={product?.name} className={inputClass} />
       </label>
       <label className={labelClass}>
-        Slug <span className={hintClass}>(optional — made from the name; also the photo folder name)</span>
+        Slug <span className={hintClass}>(optional: made from the name, and also the photo folder name)</span>
         <input name="slug" defaultValue={product?.slug} className={inputClass} />
       </label>
 
@@ -64,15 +64,15 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
         <label className={labelClass}>
           Status
           <select name="status" defaultValue={product?.status ?? "active"} className={inputClass}>
-            <option value="active">Active — can be bought</option>
+            <option value="active">Active: can be bought</option>
             <option value="sold_out">Sold out</option>
-            <option value="coming_soon">Coming soon — shows Notify me</option>
+            <option value="coming_soon">Coming soon: shows Notify me</option>
           </select>
         </label>
         <label className={labelClass}>
           Moment
           <select name="moment" defaultValue={product?.moment ?? ""} className={inputClass}>
-            <option value="">—</option>
+            <option value="">None</option>
             {MOMENTS.map((m) => (
               <option key={m} value={m}>
                 {m}
@@ -117,7 +117,7 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
 
       <button type="submit" disabled={pending} className="btn-primary w-full tab:w-auto">
         {pending && <Loader2 className="h-4 w-4 animate-spin" />}
-        {product ? "Save changes" : "Create product — add photos next"}
+        {product ? "Save changes" : "Create product, then add photos"}
       </button>
     </form>
   );

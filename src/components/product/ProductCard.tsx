@@ -1,9 +1,9 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useTranslation } from "@/components/i18n/LanguageProvider";
 import { ProductImage } from "@/components/product/ProductImage";
-import { WishlistButton } from "@/components/wishlist/WishlistButton";
 import { usePrice, useUI } from "@/lib/ui-store";
 import { cn } from "@/lib/utils";
 import type { Product } from "@/types/product";
@@ -22,7 +22,7 @@ export function ProductTag({ product, className }: { product: Product; className
   return (
     <span
       className={cn(
-        "rounded-full px-3 py-[6px] text-[10px] font-semibold uppercase tracking-[0.2em]",
+        "rounded-full px-3 py-[0.375rem] text-[length:max(0.625rem,10px)] font-semibold uppercase tracking-[0.2em]",
         tag.cls,
         className,
       )}
@@ -40,8 +40,8 @@ export function ProductCard({ product }: { product: Product }) {
   const sizes = product.sizes ?? [];
 
   return (
-    <article className="group flex flex-col">
-      <div className="relative aspect-[3/4] overflow-hidden rounded-card bg-acute-sand">
+    <article className="group flex h-full flex-col">
+      <div className="relative aspect-[4/5] overflow-hidden rounded-card bg-acute-sand">
         <button
           onClick={() => openQuickView(product)}
           aria-label={`${t.quick.quickView}: ${product.name}`}
@@ -62,41 +62,48 @@ export function ProductCard({ product }: { product: Product }) {
         </button>
 
         <ProductTag product={product} className="pointer-events-none absolute left-3 top-3" />
-        <WishlistButton product={product} className="absolute right-3 top-3" />
 
         {/* Hover quick button */}
         <button
           onClick={() => openQuickView(product)}
           tabIndex={-1}
-          className="absolute inset-x-3 bottom-3 translate-y-[calc(100%+12px)] rounded-full bg-acute-cream/95 py-3 text-[11px] font-semibold uppercase tracking-[0.2em] transition-[transform,background-color,color] duration-500 ease-soft hover:bg-acute-red hover:text-acute-cream group-hover:translate-y-0"
+          className="absolute inset-x-3 bottom-3 translate-y-[calc(100%+0.75rem)] rounded-full bg-acute-cream/95 py-3 text-[length:max(0.6875rem,10px)] font-semibold uppercase tracking-[0.2em] transition-[transform,background-color,color] duration-500 ease-soft hover:bg-acute-red hover:text-acute-cream group-hover:translate-y-0"
         >
           {t.quick.quickView}
         </button>
       </div>
 
-      <div className="mt-4 flex items-start justify-between gap-3">
-        <h3 className="font-serif text-[19px] leading-tight">
-          <button onClick={() => openQuickView(product)} className="text-left hover:text-acute-red">
+      {/* Phones: price under the name, so the name gets the card's full width. Side by side from tablet. */}
+      <div className="mt-3 flex flex-col gap-1 tab:mt-4 tab:flex-row tab:items-start tab:justify-between tab:gap-3">
+        <h3 className="font-serif text-[1rem] leading-snug tab:text-[1.125rem]">
+          <Link href={`/products/${product.slug}`} className="hover:text-acute-red">
             {product.name}
-          </button>
+          </Link>
         </h3>
-        <p className="whitespace-nowrap pt-0.5 text-[13px] tabular-nums">{price(product.price)}</p>
+        <p className="whitespace-nowrap text-[length:max(0.8125rem,12px)] tabular-nums tab:pt-0.5">
+          {price(product.price)}
+        </p>
       </div>
 
       {(colors.length > 0 || sizes.length > 0) && (
-        <div className="mt-2.5 flex items-center justify-between gap-3">
-          <ul className="flex gap-1.5" aria-label={t.quick.colors(colors.length)}>
-            {colors.map((c) => (
-              <li
-                key={c.name}
-                title={c.name}
-                className="h-3.5 w-3.5 rounded-full border border-acute-ink/15"
-                style={{ backgroundColor: c.hex }}
-              />
-            ))}
-          </ul>
-          <p className="text-[11px] uppercase tracking-[0.14em] text-acute-stone">
-            {t.quick.colors(colors.length)} · {t.quick.sizes(sizes.length)}
+        <div className="mt-auto flex items-center justify-between gap-3 pt-2.5">
+          {colors.length > 0 && (
+            <ul className="flex shrink-0 gap-1.5" aria-label={t.quick.colors(colors.length)}>
+              {colors.map((c) => (
+                <li
+                  key={c.name}
+                  title={c.name}
+                  className="h-3.5 w-3.5 rounded-full border border-acute-ink/15"
+                  style={{ backgroundColor: c.hex }}
+                />
+              ))}
+            </ul>
+          )}
+          {/* Only the counts there are — no "0 colours" */}
+          <p className="text-[length:max(0.6875rem,10px)] uppercase tracking-[0.14em] text-acute-stone">
+            {[colors.length > 0 && t.quick.colors(colors.length), sizes.length > 0 && t.quick.sizes(sizes.length)]
+              .filter(Boolean)
+              .join(" · ")}
           </p>
         </div>
       )}

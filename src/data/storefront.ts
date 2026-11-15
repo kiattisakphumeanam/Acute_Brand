@@ -25,9 +25,9 @@ export const MENU: MenuGroup[] = [
       {
         title: "Shop by Collection",
         links: [
-          { label: "AW26 — The Quiet Hours", href: "/#launch" },
+          { label: "AW26 The Quiet Hours", href: "/#launch" },
           { label: "The Intentional Edit", href: "/#shop" },
-          { label: "All Items", href: "/#shop" },
+          { label: "All Items", href: "/products" },
         ],
       },
       {
@@ -43,7 +43,7 @@ export const MENU: MenuGroup[] = [
     columns: [
       {
         title: "Shop by Category",
-        links: [{ label: "All Items", href: "/#shop" }, ...CATEGORY_LINKS],
+        links: [{ label: "All Items", href: "/products" }, ...CATEGORY_LINKS],
       },
     ],
   },
@@ -55,23 +55,22 @@ export const MENU: MenuGroup[] = [
       {
         title: "Dress for",
         links: [
-          { label: "Work", href: "/#moments" },
-          { label: "Weekend", href: "/#moments" },
-          { label: "Evening", href: "/#moments" },
-          { label: "Everyday", href: "/#moments" },
+          { label: "Work", href: "/products?moment=Work" },
+          { label: "Weekend", href: "/products?moment=Weekend" },
+          { label: "Evening", href: "/products?moment=Evening" },
+          { label: "Everyday", href: "/products?moment=Everyday" },
         ],
       },
     ],
   },
   {
     label: "Lookbook",
-    href: "/#details",
-    feature: { title: "In the Details", tone: "blue", href: "/#details" },
+    href: "/#story",
+    feature: { title: "Our Story", tone: "blue", href: "/#story" },
     columns: [
       {
         title: "Stories",
         links: [
-          { label: "In the Details", href: "/#details" },
           { label: "Our Story", href: "/#story" },
           { label: "Our Philosophy", href: "/about" },
         ],
@@ -89,7 +88,6 @@ export const MENU: MenuGroup[] = [
           { label: "About", href: "/about" },
           { label: "Membership", href: "/signup" },
           { label: "Stores", href: "/#stores" },
-          { label: "Wishlist", href: "/wishlist" },
         ],
       },
     ],
@@ -97,18 +95,15 @@ export const MENU: MenuGroup[] = [
 ];
 
 export const SOCIALS = [
-  { label: "Instagram", short: "IG", href: "https://instagram.com" },
-  { label: "Facebook", short: "FB", href: "https://facebook.com" },
-  { label: "TikTok", short: "TT", href: "https://tiktok.com" },
-  { label: "LINE", short: "LINE", href: "https://line.me" },
+  { label: "Instagram", href: "https://www.instagram.com/acute.official_" },
 ];
 
 
 export const STORES = [
-  { name: "ACUTE Siam", area: "Siam Discovery, 3F", city: "Bangkok", hours: "10:00 – 22:00" },
-  { name: "ACUTE Thonglor", area: "The Commons, G", city: "Bangkok", hours: "10:00 – 21:00" },
-  { name: "ACUTE Iconsiam", area: "Iconsiam, 2F", city: "Bangkok", hours: "10:00 – 22:00" },
-  { name: "ACUTE Nimman", area: "One Nimman, 1F", city: "Chiang Mai", hours: "11:00 – 21:00" },
+  { name: "ACUTE Siam", area: "Siam Discovery, 3F", city: "Bangkok", opens: "10:00", closes: "22:00" },
+  { name: "ACUTE Thonglor", area: "The Commons, G", city: "Bangkok", opens: "10:00", closes: "21:00" },
+  { name: "ACUTE Iconsiam", area: "Iconsiam, 2F", city: "Bangkok", opens: "10:00", closes: "22:00" },
+  { name: "ACUTE Nimman", area: "One Nimman, 1F", city: "Chiang Mai", opens: "11:00", closes: "21:00" },
 ];
 
 /** Countdown target for the next collection drop. */
@@ -130,3 +125,17 @@ export const CURRENCY_COOKIE = "acute-currency";
 export function isCurrency(value: unknown): value is Currency {
   return typeof value === "string" && value in CURRENCIES;
 }
+
+/** Membership rules — keep in step with the membership page and its terms. Applied by src/lib/membership.ts. */
+export const MEMBERSHIP = {
+  /** New members: off their first paid order, no cap */
+  firstOrderRate: 0.05,
+  /** Tiers by points, highest first. Morning Tea (0–99) has no ongoing discount. */
+  tiers: [
+    { id: "acute", name: "ACUTE", minPoints: 500, rate: 0.1, capTHB: 100 },
+    { id: "lunch_coffee", name: "Lunch Coffee", minPoints: 100, rate: 0.05, capTHB: 50 },
+  ],
+  /** Points per THB 100 spent: everyone earns 1, the ACUTE tier 1.5 */
+  pointsPer100: 1,
+  acutePointsPer100: 1.5,
+} as const;

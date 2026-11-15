@@ -16,7 +16,7 @@ const defaultSize: Record<Level, Size> = { h1: "xl", h2: "lg", h3: "md", h4: "sm
 interface Props {
   as?: Level;
   size?: Size;
-  /** Small sans-serif label above the heading, e.g. "Lookbook — Vol. 04" */
+  /** Small sans-serif label above the heading, e.g. "Lookbook Vol. 04" */
   eyebrow?: string;
   className?: string;
   children: React.ReactNode;

@@ -27,7 +27,7 @@ const config: Config = {
         },
       },
       borderRadius: {
-        card: "22px 22px 0 22px",
+        card: "1.375rem 1.375rem 0 1.375rem",
         arch: "999px 999px 0 0",
       },
       // Brand type scale: display sizes sit at 90–110% leading, body copy at ~140%

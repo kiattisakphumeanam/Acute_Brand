@@ -18,7 +18,7 @@ export function Toast() {
       {toast && (
         <p
           key={toast.id}
-          className="animate-fade-up rounded-full bg-acute-ink px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-acute-cream shadow-xl"
+          className="animate-fade-up rounded-full bg-acute-ink px-6 py-3 text-[length:max(0.75rem,10px)] font-semibold uppercase tracking-[0.16em] text-acute-cream shadow-xl"
         >
           {toast.message}
         </p>

@@ -7,6 +7,18 @@
     scroll-behavior: smooth;
   }
 
+  /* Promo bar and sticky header heights — the home hero slides up under the header by exactly this much.
+     Text rows are font-size x the body's 1.4 leading; keep in step with PromoMarquee and Header. */
+  :root {
+    --promo-h: calc(1.125rem + max(0.6875rem, 10px) * 1.4);
+    --header-h: calc(4rem + 1px);
+  }
+  @media (min-width: 760px) {
+    :root {
+      --header-h: calc(5.75rem + 2px + max(0.75rem, 10px) * 1.4);
+    }
+  }
+
   body {
     @apply bg-acute-cream font-sans font-light leading-body tracking-[-0.01em] text-acute-ink antialiased;
     overflow-x: hidden;
@@ -30,7 +42,7 @@
 
 @layer components {
   .container-acute {
-    @apply mx-auto w-full max-w-[1360px] px-5 tab:px-8 desk:px-12;
+    @apply mx-auto w-full max-w-[85rem] px-5 tab:px-8 desk:px-12;
   }
 
   /* Headings — serif 500, uppercase, tight leading */
@@ -39,12 +51,17 @@
     @apply font-serif font-medium uppercase leading-heading tracking-[-0.01em];
   }
 
+  /* Home section titles — one scale for all of them: 30px phone, 36px tablet, 44px desktop. The hero headline stays the largest type on the page. */
+  .heading-section {
+    @apply caps text-[1.875rem] tab:text-[2.25rem] desk:text-[2.75rem];
+  }
+
   .eyebrow {
-    @apply text-[12px] font-semibold uppercase tracking-[0.24em] text-acute-red;
+    @apply text-[length:max(0.75rem,10px)] font-semibold uppercase tracking-[0.24em] text-acute-red;
   }
 
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-full px-7 py-[14px] text-[12px] font-semibold uppercase tracking-[0.2em] transition-colors duration-300 ease-soft focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-acute-red disabled:cursor-not-allowed disabled:opacity-60;
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-7 py-[0.875rem] text-[length:max(0.75rem,10px)] font-semibold uppercase tracking-[0.2em] transition-colors duration-300 ease-soft focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-acute-red disabled:cursor-not-allowed disabled:opacity-60;
   }
 
   .btn-primary {
@@ -60,7 +77,7 @@
   }
 
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 border-b border-acute-ink/40 pb-1 text-[12px] font-semibold uppercase tracking-[0.2em] transition-colors duration-300 hover:border-acute-red hover:text-acute-red;
+    @apply inline-flex items-center justify-center gap-2 border-b border-acute-ink/40 pb-1 text-[length:max(0.75rem,10px)] font-semibold uppercase tracking-[0.2em] transition-colors duration-300 hover:border-acute-red hover:text-acute-red;
   }
 
   .hex {
@@ -87,10 +104,116 @@
     transform: none;
   }
 
+  /* Social app icons — hover lifts and pops with a brand-coloured glow, plus a flourish per brand */
+  .social {
+    display: flex;
+    transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .social:hover,
+  .social:focus-visible {
+    transform: translateY(-2px) scale(1.06);
+    animation: social-pop 450ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .social-icon {
+    transition: box-shadow 300ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .social:hover .social-icon,
+  .social:focus-visible .social-icon {
+    box-shadow: 0 8px 18px -6px var(--glow);
+  }
+
+  [data-brand="instagram"] {
+    --glow: #d6249f;
+    background-size: 160% 160%;
+    background-position: 0% 100%;
+  }
+  .social:hover [data-brand="instagram"] {
+    animation: ig-shift 2.4s ease-in-out infinite alternate;
+  }
+
+  /* Hero slide copy — stops short of the photo on the right (42% of the screen on tablet, 45% on desktop) */
+  @media (min-width: 760px) {
+    .slide-copy {
+      max-width: calc(58vw - (100vw - 100%) / 2 - 2.5rem);
+    }
+  }
+  @media (min-width: 1040px) {
+    .slide-copy {
+      max-width: calc(55vw - (100vw - 100%) / 2 - 2.5rem);
+    }
+  }
+
+  /* Home page header resting on the hero (data-over is set until it is hovered, focused or scrolled).
+     "dark": white over the video / red slide; "light": original colours, just no background. */
+  .site-header[data-over] {
+    background-color: transparent;
+    border-color: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+  .site-header[data-over="dark"] .on-hero {
+    color: #fff;
+    filter: drop-shadow(0 1px 2px rgb(47 49 53 / 0.35));
+  }
+  /* The language not in use stays dimmer, as it is on cream */
+  .site-header[data-over="dark"] .on-hero[aria-pressed="false"] {
+    color: rgb(255 255 255 / 0.6);
+  }
+  .site-header[data-over="dark"] .on-hero-rule {
+    border-color: rgb(255 255 255 / 0.25);
+  }
+  .site-header[data-over="dark"] .on-hero-line {
+    background-color: rgb(255 255 255 / 0.6);
+  }
+  /* Instagram goes monochrome: white glyph, no gradient tile */
+  .site-header[data-over="dark"] [data-brand="instagram"] {
+    background: transparent;
+    filter: drop-shadow(0 1px 2px rgb(47 49 53 / 0.35));
+  }
+  /* Staggered entrance; set animation-delay per icon */
+  .social-in {
+    animation: social-in 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
   /* Repeating "ac" monogram, as in the brand pattern sheet */
   .ac-pattern {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='120'%3E%3Ctext x='14' y='58' font-family='Georgia,serif' font-size='54' fill='%23B7C9DB' fill-opacity='.55'%3Eac%3C/text%3E%3Ctext x='94' y='114' font-family='Georgia,serif' font-size='54' fill='%23B7C9DB' fill-opacity='.55'%3Eac%3C/text%3E%3C/svg%3E");
     background-size: 160px 120px;
+  }
+}
+
+/* Hero slideshow — the active slide's line fills until the next one */
+@keyframes hero-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes social-pop {
+  0% {
+    transform: none;
+  }
+  55% {
+    transform: translateY(-3px) scale(1.16);
+  }
+  100% {
+    transform: translateY(-2px) scale(1.06);
+  }
+}
+
+@keyframes social-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@keyframes ig-shift {
+  to {
+    background-position: 100% 0%;
   }
 }
 

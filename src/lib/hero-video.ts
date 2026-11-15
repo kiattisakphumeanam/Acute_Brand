@@ -1,5 +1,5 @@
 import "server-only";
-import { existsSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
 import path from "node:path";
 
 export interface HeroVideoFiles {
@@ -19,9 +19,17 @@ const VIDEO = [
 ] as const;
 const IMAGE = ["jpg", "jpeg", "webp", "png"];
 
+/** Matched case-insensitively (hero3.MP4 counts) but served under the file's real name, which Linux hosts need. */
 function find(base: string) {
+  let files: string[] = [];
+  try {
+    files = readdirSync(DIR);
+  } catch {
+    return undefined; // no public/videos yet
+  }
   for (const [ext, type] of VIDEO) {
-    if (existsSync(path.join(DIR, `${base}.${ext}`))) return { src: `/videos/${base}.${ext}`, type };
+    const file = files.find((f) => f.toLowerCase() === `${base}.${ext}`);
+    if (file) return { src: `/videos/${encodeURIComponent(file)}`, type };
   }
   return undefined;
 }
@@ -39,4 +47,9 @@ export function getHeroVideo(): HeroVideoFiles | null {
     mobile: find("hero-mobile"),
     poster: posterExt ? `/videos/hero-poster.${posterExt}` : undefined,
   };
+}
+
+/** Video for a hero slide's media panel, e.g. public/videos/hero3.mp4 for the third slide. */
+export function getSlideVideo(name: string) {
+  return find(name);
 }

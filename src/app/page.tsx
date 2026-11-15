@@ -1,14 +1,9 @@
 import { BrandStory } from "@/components/sections/BrandStory";
-import { DetailsGallery } from "@/components/sections/DetailsGallery";
 import { FeatureRow } from "@/components/sections/FeatureRow";
 import { Hero } from "@/components/sections/Hero";
-import { LaunchCountdown } from "@/components/sections/LaunchCountdown";
 import { Moments } from "@/components/sections/Moments";
-import { OfferBanner } from "@/components/sections/OfferBanner";
-import { PhilosophyMarquee } from "@/components/sections/PhilosophyMarquee";
 import { ProductGrid } from "@/components/sections/ProductGrid";
 import { StoreList } from "@/components/sections/StoreList";
-import { LAUNCH_AT } from "@/data/storefront";
 import { getProducts } from "@/lib/products";
 import { CATEGORIES, type Category } from "@/types/product";
 
@@ -23,15 +18,11 @@ export default async function HomePage({ searchParams }: Props) {
   return (
     <>
       <Hero />
-      <PhilosophyMarquee />
       {/* Re-keyed so a mega-menu category link resets the active tab */}
-      <ProductGrid key={initialCategory} products={products} initialCategory={initialCategory} />
-      <OfferBanner />
-      <BrandStory />
+      <ProductGrid key={initialCategory} products={products} initialCategory={initialCategory} preview />
       <Moments />
-      <DetailsGallery />
+      <BrandStory />
       <StoreList />
-      <LaunchCountdown launchAt={LAUNCH_AT} />
       <FeatureRow />
     </>
   );

@@ -16,9 +16,11 @@ interface Props {
   category: Category;
   sizes?: string;
   className?: string;
+  /** Set for the above-the-fold image so it isn't lazy-loaded. */
+  priority?: boolean;
 }
 
-export function ProductImage({ src, alt, category, sizes, className }: Props) {
+export function ProductImage({ src, alt, category, sizes, className, priority }: Props) {
   if (!src) {
     return (
       <EditorialPlaceholder
@@ -34,6 +36,7 @@ export function ProductImage({ src, alt, category, sizes, className }: Props) {
         src={src}
         alt={alt}
         fill
+        priority={priority}
         sizes={sizes ?? "(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"}
         className="object-cover transition-transform duration-700 ease-soft group-hover:scale-[1.03]"
       />

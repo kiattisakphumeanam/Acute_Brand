@@ -11,8 +11,10 @@ import { useUI } from "@/lib/ui-store";
 import { cn } from "@/lib/utils";
 
 const SEEN_KEY = "acute-member-seen";
+/** Off for now — visitors already find the member offer in the hero slideshow. Set to true to bring the invite back. */
+const AUTO_OPEN = false;
 
-/** Membership invite. Opens by itself once per session, 3s after load, for signed-out visitors. */
+/** Membership invite. When AUTO_OPEN is on, opens by itself once per session, 3s after load, for signed-out visitors. */
 export function MemberModal() {
   const user = useUser();
   const router = useRouter();
@@ -21,7 +23,7 @@ export function MemberModal() {
   const setOpen = useUI((s) => s.setMemberOpen);
 
   useEffect(() => {
-    if (user) return;
+    if (!AUTO_OPEN || user) return;
     let seen = false;
     try {
       seen = sessionStorage.getItem(SEEN_KEY) === "1";
@@ -63,7 +65,7 @@ export function MemberModal() {
           role="dialog"
           aria-modal="true"
           aria-labelledby="member-title"
-          className="relative grid w-full max-w-[780px] animate-fade-up overflow-hidden rounded-card bg-acute-cream tab:grid-cols-[1fr_1.15fr]"
+          className="relative grid max-h-full w-full max-w-[48.75rem] animate-fade-up grid-cols-1 overflow-y-auto overscroll-contain rounded-card bg-acute-cream tab:grid-cols-[1fr_1.15fr] tab:overflow-hidden"
         >
           <button
             onClick={() => setOpen(false)}
@@ -77,11 +79,11 @@ export function MemberModal() {
             <EditorialPlaceholder tone="cream" label="" className="absolute inset-x-10 bottom-0 top-12 rounded-arch" />
           </div>
 
-          <div className="p-8 tab:p-10">
+          <div className="min-w-0 p-6 tab:p-10">
             <AcIcon className="h-9 text-acute-red" />
             <p className="eyebrow mt-5">{t.member.eyebrow}</p>
-            <h2 id="member-title" className="caps mt-3 text-[40px]">{t.member.title}</h2>
-            <p className="mt-4 text-[15px] leading-relaxed text-acute-ink-light">{t.member.body}</p>
+            <h2 id="member-title" className="caps mt-3 text-[2rem] tab:text-[2.5rem]">{t.member.title}</h2>
+            <p className="mt-4 text-[0.9375rem] leading-relaxed text-acute-ink-light">{t.member.body}</p>
             <ul className="mt-5 space-y-2">
               {t.member.perks.map((perk) => (
                 <li key={perk} className="flex items-center gap-2.5 text-sm">
@@ -89,14 +91,14 @@ export function MemberModal() {
                 </li>
               ))}
             </ul>
-            <form onSubmit={submit} className="mt-7 space-y-3">
+            <form onSubmit={submit} className="mt-6 space-y-3 tab:mt-7">
               <input
                 type="email"
                 name="email"
                 required
                 placeholder={t.member.email}
                 aria-label={t.member.email}
-                className="w-full rounded-full border border-acute-line bg-acute-cream-light px-5 py-[13px] text-sm outline-none focus:border-acute-ink"
+                className="w-full rounded-full border border-acute-line bg-acute-cream-light px-5 py-[0.8125rem] text-sm outline-none focus:border-acute-ink"
               />
               <button type="submit" className="btn-primary w-full">
                 {t.member.cta}
@@ -104,7 +106,7 @@ export function MemberModal() {
             </form>
             <button
               onClick={() => setOpen(false)}
-              className="mt-4 w-full text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-acute-stone hover:text-acute-ink"
+              className="mt-4 w-full text-center text-[length:max(0.6875rem,10px)] font-semibold uppercase tracking-[0.2em] text-acute-stone hover:text-acute-ink"
             >
               {t.member.dismiss}
             </button>

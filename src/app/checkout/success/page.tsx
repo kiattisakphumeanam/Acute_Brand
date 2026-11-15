@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { ClearCart } from "./ClearCart";
 
-export const metadata = { title: "Thank you — ACUTE" };
+export const metadata = { title: "Thank you | ACUTE" };
 
 export default function CheckoutSuccessPage() {
   return (
-    <section className="container-acute flex min-h-[80vh] flex-col items-center justify-center py-32 text-center">
+    <section className="container-acute flex min-h-[70vh] flex-col items-center justify-center py-12 text-center desk:py-16">
       <ClearCart />
       <p className="eyebrow">Order confirmed</p>
-      <h1 className="heading-display mt-6 text-5xl sm:text-6xl">Thank you</h1>
+      <h1 className="heading-section mt-6">Thank you</h1>
       <p className="mt-6 max-w-md leading-relaxed text-acute-ink/70">
         Your pieces are being prepared with care. A confirmation is on its way to your inbox.
       </p>

@@ -31,7 +31,7 @@ export default async function AdminProductsPage() {
       <div className="flex flex-wrap items-end justify-between gap-6">
         <div>
           <p className="eyebrow">Admin</p>
-          <h1 className="caps mt-4 text-[44px] tab:text-[56px]">
+          <h1 className="caps mt-4 text-[2.75rem] tab:text-[3.5rem]">
             Products <span className="text-acute-stone">({products.length})</span>
           </h1>
         </div>
@@ -40,7 +40,7 @@ export default async function AdminProductsPage() {
         </Link>
       </div>
 
-      {!supabase && <p className="mt-10 text-sm text-acute-red">Supabase isn&apos;t configured — add the keys to .env.local.</p>}
+      {!supabase && <p className="mt-10 text-sm text-acute-red">Supabase isn&apos;t configured. Add the keys to .env.local.</p>}
       {error && (
         <p className="mt-10 text-sm text-acute-red">
           Couldn&apos;t load products: {error.message}. Have you run supabase/schema.sql in the SQL Editor?
@@ -54,7 +54,7 @@ export default async function AdminProductsPage() {
               href={`/admin/products/${p.id}`}
               className={cn("flex min-w-0 flex-1 items-center gap-4", !p.is_active && "opacity-50")}
             >
-              <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-[12px_12px_0_12px]">
+              <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-[0.75rem_0.75rem_0_0.75rem]">
                 {p.image_url ? (
                   <Image src={p.image_url} alt="" fill sizes="64px" className="object-cover" />
                 ) : (
@@ -67,7 +67,7 @@ export default async function AdminProductsPage() {
                   {dictionaries.en.categories[p.category] ?? p.category} · /{p.slug}
                   {p.sizes?.length ? ` · ${p.sizes.join(" ")}` : ""}
                 </p>
-                <p className="mt-1.5 flex flex-wrap gap-1.5 text-[10px] font-semibold uppercase tracking-[0.16em]">
+                <p className="mt-1.5 flex flex-wrap gap-1.5 text-[length:max(0.625rem,10px)] font-semibold uppercase tracking-[0.16em]">
                   {!p.is_active && <span className="rounded-full bg-acute-ink px-2 py-0.5 text-acute-cream">Hidden</span>}
                   {p.status && p.status !== "active" && (
                     <span className="rounded-full bg-acute-blue px-2 py-0.5">{STATUS_LABEL[p.status]}</span>
@@ -78,13 +78,13 @@ export default async function AdminProductsPage() {
               </div>
             </Link>
             <span className="hidden text-sm tabular-nums tab:block">{formatTHB(p.price)}</span>
-            <Link href={`/admin/products/${p.id}`} className="btn-outline px-4 py-2 text-[11px]">
+            <Link href={`/admin/products/${p.id}`} className="btn-outline px-4 py-2 text-[length:max(0.6875rem,10px)]">
               Edit
             </Link>
             <form action={setProductActive.bind(null, p.id, !p.is_active)}>
               <button
                 className={cn(
-                  "w-20 rounded-full border px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] transition-colors",
+                  "w-20 rounded-full border px-3 py-2 text-[length:max(0.6875rem,10px)] font-semibold uppercase tracking-[0.2em] transition-colors",
                   p.is_active
                     ? "border-acute-line hover:border-acute-ink"
                     : "border-acute-red text-acute-red hover:bg-acute-red hover:text-acute-cream",

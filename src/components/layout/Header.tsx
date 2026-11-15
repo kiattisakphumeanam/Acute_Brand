@@ -3,22 +3,22 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Heart, Menu, Search, ShoppingBag, User } from "lucide-react";
+import { Menu, Search, ShoppingBag, User } from "lucide-react";
 import { useUser } from "@/components/auth/AuthProvider";
 import { useCart } from "@/components/cart/CartProvider";
 import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import { useTranslation } from "@/components/i18n/LanguageProvider";
 import { MegaMenu } from "@/components/layout/MegaMenu";
 import { MobileNav } from "@/components/layout/MobileNav";
+import { SocialIcon } from "@/components/ui/SocialIcon";
 import { Wordmark } from "@/components/ui/Wordmark";
-import { useWishlist } from "@/components/wishlist/WishlistProvider";
 import { MENU, SOCIALS } from "@/data/storefront";
 import { useUI } from "@/lib/ui-store";
 import { cn } from "@/lib/utils";
 
-const iconClass = "h-[19px] w-[19px]";
+const iconClass = "h-[1.1875rem] w-[1.1875rem]";
 const actionClass =
-  "relative flex h-10 w-10 items-center justify-center text-acute-ink transition-colors duration-300 ease-soft hover:text-acute-red";
+  "on-hero relative flex h-10 w-10 items-center justify-center text-acute-ink transition-colors duration-300 ease-soft hover:text-acute-red";
 
 export function CountBadge({ count }: { count: number }) {
   if (count <= 0) return null;
@@ -26,7 +26,7 @@ export function CountBadge({ count }: { count: number }) {
     // Re-keying on count replays the pop whenever an item is added or removed
     <span
       key={count}
-      className="absolute right-0.5 top-0.5 flex h-4 min-w-4 animate-badge-pop items-center justify-center rounded-full bg-acute-red px-1 text-[9px] font-semibold text-acute-cream"
+      className="absolute right-0.5 top-0.5 flex h-4 min-w-4 animate-badge-pop items-center justify-center rounded-full bg-acute-red px-1 text-[length:max(0.5625rem,9px)] font-semibold text-acute-cream"
     >
       {count}
     </span>
@@ -38,15 +38,17 @@ export function Header() {
   const pathname = usePathname();
   const { t } = useTranslation();
   const { count, open } = useCart();
-  const { count: savedCount } = useWishlist();
   const setSearchOpen = useUI((s) => s.setSearchOpen);
+  const heroTone = useUI((s) => s.heroTone);
   const [scrolled, setScrolled] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const [focused, setFocused] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [active, setActive] = useState<number | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
+    const onScroll = () => setScrolled(window.scrollY > 20);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -75,6 +77,19 @@ export function Header() {
     closeTimer.current = setTimeout(() => setActive(null), 120);
   };
 
+  // Pages that open on a full-bleed hero (home, membership): rest transparent on it until hovered, keyboard-focused,
+  // a menu is open, or the page scrolls. White on dark slides; on light ones it keeps its own colours.
+  const resting = !scrolled && !hovered && !focused && !menuOpen && active === null;
+  const over = !resting
+    ? undefined
+    : pathname === "/membership"
+      ? "dark"
+      : pathname === "/"
+        ? heroTone === "dark"
+          ? "dark"
+          : "light"
+        : undefined;
+
   const cartIcon = (
     <>
       <ShoppingBag className={iconClass} strokeWidth={1.4} />
@@ -85,17 +100,28 @@ export function Header() {
   return (
     <>
       <header
-        onMouseLeave={scheduleClose}
+        data-over={over}
+        // Mouse only — on touch screens a tap fires enter but never leave
+        onPointerEnter={(e) => e.pointerType === "mouse" && setHovered(true)}
+        onPointerLeave={(e) => {
+          if (e.pointerType === "mouse") setHovered(false);
+          scheduleClose();
+        }}
+        // Keyboard focus only — a tap also focuses the button, which would leave the header solid after the menu closes
+        onFocus={(e) => setFocused(e.target.matches(":focus-visible"))}
+        onBlur={(e) => {
+          if (!e.currentTarget.contains(e.relatedTarget)) setFocused(false);
+        }}
         className={cn(
-          "sticky top-0 z-40 border-b bg-acute-cream/95 backdrop-blur-md transition-[border-color,box-shadow] duration-500 ease-soft",
+          "site-header sticky top-0 z-40 border-b bg-acute-cream/95 backdrop-blur-md transition-[background-color,border-color,box-shadow] duration-300 ease-soft",
           scrolled ? "border-acute-line shadow-[0_1px_24px_-12px_rgba(47,49,53,0.18)]" : "border-transparent",
         )}
       >
-        <div className="container-acute relative grid h-[64px] grid-cols-[1fr_auto_1fr] items-center desk:h-[78px]">
+        <div className="container-acute relative grid h-[4rem] grid-cols-[1fr_auto_1fr] items-center">
           {/* Left: menu toggle on mobile, socials on desktop */}
           <div className="flex items-center">
             <button
-              className="-ml-2 flex h-10 w-10 items-center justify-center desk:hidden"
+              className="on-hero -ml-2 flex h-10 w-10 items-center justify-center transition-colors duration-300 tab:hidden"
               onClick={() => setMenuOpen(true)}
               aria-label={t.nav.openMenu}
               aria-expanded={menuOpen}
@@ -103,17 +129,11 @@ export function Header() {
             >
               <Menu className={iconClass} strokeWidth={1.4} />
             </button>
-            <ul aria-label={t.header.socials} className="hidden items-center gap-1 desk:flex">
-              {SOCIALS.map((s) => (
-                <li key={s.label}>
-                  <a
-                    href={s.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label={s.label}
-                    className="hex flex h-8 min-w-8 items-center justify-center bg-acute-blue px-2 text-[9px] font-semibold tracking-[0.1em] transition-colors hover:bg-acute-red hover:text-acute-cream"
-                  >
-                    {s.short}
+            <ul aria-label={t.header.socials} className="hidden items-center gap-2 tab:flex">
+              {SOCIALS.map((s, i) => (
+                <li key={s.label} className="social-in" style={{ animationDelay: `${200 + i * 90}ms` }}>
+                  <a href={s.href} target="_blank" rel="noreferrer" aria-label={s.label} className="social">
+                    <SocialIcon name={s.label} />
                   </a>
                 </li>
               ))}
@@ -123,9 +143,9 @@ export function Header() {
           <Link
             href="/"
             aria-label={t.nav.home}
-            className="text-acute-red transition-colors duration-300 hover:text-acute-red-dark"
+            className="on-hero text-acute-red transition-colors duration-300 hover:text-acute-red-dark"
           >
-            <Wordmark title="" className="h-[22px] desk:h-[30px]" />
+            <Wordmark title="" className="h-[1.375rem] desk:h-[1.5rem]" />
           </Link>
 
           <div className="-mr-2 flex items-center justify-end">
@@ -139,10 +159,6 @@ export function Header() {
             >
               <User className={iconClass} strokeWidth={1.4} />
             </Link>
-            <Link href="/wishlist" className={cn(actionClass, "hidden tab:flex")} aria-label={t.nav.wishlist}>
-              <Heart className={iconClass} strokeWidth={1.4} />
-              <CountBadge count={savedCount} />
-            </Link>
             {user ? (
               <button onClick={open} className={actionClass} aria-label={t.nav.openCart(count)}>
                 {cartIcon}
@@ -152,14 +168,14 @@ export function Header() {
                 {cartIcon}
               </Link>
             )}
-            <span aria-hidden className="mx-2 hidden h-4 w-px bg-acute-stone/60 desk:block" />
-            <LanguageSwitcher className="hidden desk:flex" />
+            <span aria-hidden className="on-hero-line mx-2 hidden h-4 w-px bg-acute-stone/60 transition-colors duration-300 tab:block" />
+            <LanguageSwitcher className="hidden tab:flex" itemClassName="on-hero" />
           </div>
         </div>
 
         {/* Desktop nav row */}
-        <nav aria-label="Main" className="hidden border-t border-acute-line desk:block">
-          <ul className="flex items-center justify-center gap-11">
+        <nav aria-label="Main" className="on-hero-rule hidden border-t border-acute-line transition-colors duration-300 tab:block">
+          <ul className="flex items-center justify-center gap-7 desk:gap-9">
             {MENU.map((group, i) => (
               <li key={group.label}>
                 <Link
@@ -169,7 +185,7 @@ export function Header() {
                   aria-expanded={active === i}
                   aria-haspopup="true"
                   className={cn(
-                    "relative block py-[14px] text-[12px] font-semibold uppercase tracking-[0.2em] transition-colors duration-300 hover:text-acute-red",
+                    "on-hero relative block py-[0.875rem] text-[length:max(0.75rem,10px)] font-semibold uppercase tracking-[0.2em] transition-colors duration-300 hover:text-acute-red",
                     active === i && "text-acute-red",
                   )}
                 >
@@ -177,7 +193,7 @@ export function Header() {
                   <span
                     aria-hidden
                     className={cn(
-                      "absolute inset-x-0 bottom-[8px] h-px origin-left bg-acute-red transition-transform duration-500 ease-soft",
+                      "absolute inset-x-0 bottom-[0.5rem] h-px origin-left bg-acute-red transition-transform duration-500 ease-soft",
                       active === i ? "scale-x-100" : "scale-x-0",
                     )}
                   />
@@ -188,7 +204,7 @@ export function Header() {
               <li>
                 <Link
                   href="/admin"
-                  className="block py-[14px] text-[12px] font-semibold uppercase tracking-[0.2em] text-acute-red"
+                  className="on-hero block py-[0.875rem] text-[length:max(0.75rem,10px)] font-semibold uppercase tracking-[0.2em] text-acute-red"
                 >
                   {t.nav.admin}
                 </Link>

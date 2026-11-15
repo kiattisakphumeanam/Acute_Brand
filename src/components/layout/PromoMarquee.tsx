@@ -8,15 +8,15 @@ export async function PromoMarquee() {
   return (
     <div className="relative z-50 overflow-hidden bg-acute-red text-acute-cream">
       <p className="sr-only">{promo.join(" · ")}</p>
-      <div aria-hidden className="flex w-max animate-marquee py-[9px] hover:[animation-play-state:paused]">
+      <div aria-hidden className="flex w-max animate-marquee py-[0.5625rem] hover:[animation-play-state:paused]">
         {[0, 1].map((copy) => (
           <ul key={copy} className="flex shrink-0">
             {items.map((msg, i) => (
               <li
                 key={`${copy}-${i}`}
-                className="flex items-center whitespace-nowrap px-8 text-[11px] font-semibold uppercase tracking-[0.24em]"
+                className="flex items-center whitespace-nowrap px-8 text-[length:max(0.6875rem,10px)] font-semibold uppercase tracking-[0.24em]"
               >
-                <span className="mr-8 text-[8px] text-acute-red-light">◆</span>
+                <span className="mr-8 text-[length:max(0.5rem,8px)] text-acute-red-light">◆</span>
                 {msg}
               </li>
             ))}

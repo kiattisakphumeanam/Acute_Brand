@@ -24,6 +24,11 @@
   alter table public.profiles
     add column if not exists role text not null default 'customer' check (role in ('customer', 'admin'));
 
+  -- Membership: set from the account page's "Connect membership" popup. member_since marks a connected member.
+  alter table public.profiles
+    add column if not exists birthday     date,
+    add column if not exists member_since timestamptz;
+
   -- Role lookup used by RLS policies. SECURITY DEFINER avoids RLS recursion on profiles.
   create or replace function public.is_admin()
   returns boolean
@@ -60,9 +65,9 @@
   create policy "Users update own profile" on public.profiles for update using (auth.uid() = id);
   create policy "Admins read all profiles" on public.profiles for select using (public.is_admin());
 
-  -- Users may edit their name/phone but never their own role.
+  -- Users may edit their name, phone and membership details but never their own role.
   revoke update on public.profiles from authenticated;
-  grant update (full_name, phone) on public.profiles to authenticated;
+  grant update (full_name, phone, birthday, member_since) on public.profiles to authenticated;
 
   -- ─────────────────────────────────────────────
   -- Products

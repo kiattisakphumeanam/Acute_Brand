@@ -6,7 +6,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { safeRedirectPath } from "@/lib/utils";
 import type { FormState } from "@/types/auth";
 
-const NOT_CONFIGURED = "Sign-in isn't configured yet — add Supabase keys to .env.local.";
+const NOT_CONFIGURED = "Sign-in isn't configured yet. Add the Supabase keys to .env.local.";
 
 export async function signIn(_prev: FormState, formData: FormData): Promise<FormState> {
   const email = String(formData.get("email") ?? "").trim();
@@ -18,7 +18,7 @@ export async function signIn(_prev: FormState, formData: FormData): Promise<Form
 
   const { error } = await supabase.auth.signInWithPassword({ email, password });
   if (error?.code === "email_not_confirmed") {
-    return { error: "Please confirm your email first — check your inbox for the link we sent." };
+    return { error: "Please confirm your email first. Check your inbox for the link we sent." };
   }
   if (error) return { error: "Incorrect email or password." };
 
@@ -54,7 +54,7 @@ export async function signUp(_prev: FormState, formData: FormData): Promise<Form
 
   // Email confirmation disabled in Supabase → we already have a session.
   if (data.session) redirect(next);
-  return { message: "Almost there — check your inbox to confirm your email." };
+  return { message: "Almost there. Check your inbox to confirm your email." };
 }
 
 export async function signOut() {

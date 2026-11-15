@@ -1,7 +1,7 @@
 import "server-only";
 import { readdirSync } from "node:fs";
 import path from "node:path";
-import type { Product } from "@/types/product";
+import { MOMENTS, type Moment, type Product } from "@/types/product";
 
 const ROOT = path.join(process.cwd(), "public", "products");
 const IMAGE = /\.(jpe?g|png|webp|avif)$/i;
@@ -35,14 +35,49 @@ function localGalleries(): Map<string, string[]> {
   return galleries;
 }
 
+/**
+ * Cover photo per moment: public/moments/work.jpg, weekend.png, … (any image type, name is case-insensitive).
+ * Moments without a file keep their placeholder.
+ */
+export function momentImages(): Partial<Record<Moment, string>> {
+  const images: Partial<Record<Moment, string>> = {};
+  let files: string[] = [];
+  try {
+    files = readdirSync(path.join(process.cwd(), "public", "moments")).filter((f) => IMAGE.test(f));
+  } catch {
+    return images; // no public/moments yet
+  }
+  for (const moment of MOMENTS) {
+    const file = files.find((f) => f.replace(IMAGE, "").toLowerCase() === moment.toLowerCase());
+    if (file) images[moment] = `/moments/${encodeURIComponent(file)}`;
+  }
+  return images;
+}
+
+/**
+ * Photo for a hero slide: public/slides/<name>.jpg (any image type, name is case-insensitive).
+ * Falls back to a Moments photo until the slide has its own.
+ */
+export function slideImage(name: string, fallback: Moment): string | undefined {
+  let files: string[] = [];
+  try {
+    files = readdirSync(path.join(process.cwd(), "public", "slides")).filter((f) => IMAGE.test(f));
+  } catch {
+    // no public/slides yet
+  }
+  const file = files.find((f) => f.replace(IMAGE, "").toLowerCase() === name.toLowerCase());
+  return file ? `/slides/${encodeURIComponent(file)}` : momentImages()[fallback];
+}
+
 /** Photos found in public/products/<slug>/ for one product. */
 export function localGallery(slug: string): string[] {
   return localGalleries().get(normalize(slug)) ?? [];
 }
 
 /**
- * Final gallery per product: uploaded images (database) first, then the local folder.
- * image_url becomes the first of those so every view (cart, search, wishlist) shows the cover.
+ * Final gallery per product: uploaded images (database), or the local folder when nothing is uploaded.
+ * The folder is only a fallback, so uploading in the admin replaces it.
+ * image_url becomes the first of those so every view (cart, search) shows the cover.
  */
 export function withLocalImages(products: Product[]): Product[] {
   const galleries = localGalleries();
@@ -50,7 +85,7 @@ export function withLocalImages(products: Product[]): Product[] {
     const uploaded = p.images ?? [];
     // A cover URL entered by hand that isn't part of the uploaded gallery still leads
     const stored = p.image_url && !uploaded.includes(p.image_url) ? [p.image_url, ...uploaded] : uploaded;
-    const images = [...stored, ...(galleries.get(normalize(p.slug)) ?? [])];
+    const images = stored.length ? stored : (galleries.get(normalize(p.slug)) ?? []);
     if (!images.length) return p;
     return { ...p, images, image_url: images[0] };
   });

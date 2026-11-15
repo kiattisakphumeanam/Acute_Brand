@@ -10,7 +10,7 @@ interface Props {
   productId: string;
   /** Uploaded to Supabase Storage — can be reordered and deleted here. */
   images: string[];
-  /** Found in public/products/<slug>/ — shown after the uploaded ones, managed in the folder. */
+  /** Found in public/products/<slug>/ — a fallback, only passed while nothing is uploaded. */
   local: string[];
 }
 
@@ -36,7 +36,7 @@ export function ImageManager({ productId, images, local }: Props) {
           ) : (
             <ImagePlus className="h-6 w-6 text-acute-red" strokeWidth={1.5} />
           )}
-          <span className="text-[12px] font-semibold uppercase tracking-[0.2em]">
+          <span className="text-[length:max(0.75rem,10px)] font-semibold uppercase tracking-[0.2em]">
             {uploading ? "Uploading…" : "Choose photos to upload"}
           </span>
           <span className="text-xs text-acute-ink/50">JPG, PNG, WebP · up to 5 MB each · several at once</span>
@@ -66,12 +66,14 @@ export function ImageManager({ productId, images, local }: Props) {
             <li key={src} className="group">
               <div className="relative aspect-[3/4] overflow-hidden rounded-card bg-acute-sand">
                 <Image src={src} alt="" fill sizes="240px" className="object-cover" />
-                <span className="absolute left-2 top-2 rounded-full bg-acute-ink/80 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-acute-cream">
+                <span className="absolute left-2 top-2 rounded-full bg-acute-ink/80 px-2.5 py-1 text-[length:max(0.625rem,10px)] font-semibold uppercase tracking-[0.16em] text-acute-cream">
                   {i === 0 ? "Cover" : i === 1 ? "Hover" : `#${i + 1}`}
                 </span>
               </div>
               {isLocal ? (
-                <p className="mt-2 text-[11px] leading-snug text-acute-ink/50">From the public/products folder</p>
+                <p className="mt-2 text-[length:max(0.6875rem,10px)] leading-snug text-acute-ink/50">
+                  From the public/products folder — uploading photos replaces these
+                </p>
               ) : (
                 <div className="mt-2 flex items-center gap-1">
                   <button

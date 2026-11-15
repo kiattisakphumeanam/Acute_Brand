@@ -16,7 +16,7 @@ export function CategoryTabs({ options, active, onChange, label }: Props) {
     <div
       role="tablist"
       aria-label={label}
-      className="no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5 tab:mx-0 tab:flex-wrap tab:px-0"
+      className="no-scrollbar -mx-5 flex items-center gap-2 overflow-x-auto overscroll-x-contain px-5 pb-1 tab:mx-0 tab:pb-0 tab:flex-wrap tab:px-0"
     >
       {options.map((opt) => {
         const isActive = opt.value === active;
@@ -27,7 +27,7 @@ export function CategoryTabs({ options, active, onChange, label }: Props) {
             aria-selected={isActive}
             onClick={() => onChange(opt.value)}
             className={cn(
-              "shrink-0 rounded-full border px-5 py-[10px] text-[12px] font-semibold uppercase tracking-[0.2em] transition-colors duration-300 ease-soft",
+              "shrink-0 whitespace-nowrap rounded-full border px-4 py-2 text-[length:max(0.6875rem,10px)] font-semibold uppercase tracking-[0.18em] tab:px-5 tab:py-[0.625rem] tab:text-[length:max(0.75rem,10px)] tab:tracking-[0.2em] transition-colors duration-300 ease-soft",
               isActive
                 ? "border-acute-red bg-acute-red text-acute-cream"
                 : "border-acute-line bg-acute-cream-light text-acute-ink hover:border-acute-ink",

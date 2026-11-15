@@ -40,6 +40,3 @@ export interface CartLine extends Pick<Product, "id" | "name" | "price" | "categ
   size?: string;
   quantity: number;
 }
-
-/** What the wishlist stores — the same display snapshot as a cart line, minus quantity and size. */
-export type WishlistItem = Pick<Product, "id" | "name" | "price" | "category" | "image_url">;

@@ -1,8 +1,9 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
+import { PRODUCTS_TAG } from "@/lib/products";
 import { createSupabaseServerClient, getSupabaseAdmin } from "@/lib/supabase/server";
 import type { FormState } from "@/types/auth";
 import { CATEGORIES, MOMENTS, type Category, type ProductColor, type ProductStatus } from "@/types/product";
@@ -42,6 +43,7 @@ function slugify(text: string) {
 }
 
 function revalidateProduct(id?: string) {
+  revalidateTag(PRODUCTS_TAG);
   revalidatePath("/");
   revalidatePath("/admin");
   if (id) revalidatePath(`/admin/products/${id}`);

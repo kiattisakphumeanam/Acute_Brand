@@ -117,7 +117,7 @@ const en = {
       playSlides: "Play slideshow",
     },
     marquee: ["Intentional in‑between", "Where brilliance meets kindness", "Clear", "Confident", "Intentional"],
-    shop: { eyebrow: "Just landed", title: "New arrivals", viewAll: "View all" },
+    shop: { eyebrow: "Just landed", title: "New arrivals", viewAll: "View all items" },
     launch: {
       eyebrow: "Coming soon",
       title: "The Quiet Hours",
@@ -429,7 +429,7 @@ const th: Dictionary = {
       playSlides: "เล่นสไลด์",
     },
     marquee: ["Intentional in‑between", "Where brilliance meets kindness", "Clear", "Confident", "Intentional"],
-    shop: { eyebrow: "มาใหม่", title: "สินค้าใหม่", viewAll: "ดูทั้งหมด" },
+    shop: { eyebrow: "มาใหม่", title: "สินค้าใหม่", viewAll: "ดูสินค้าทั้งหมด" },
     launch: {
       eyebrow: "เร็ว ๆ นี้",
       title: "The Quiet Hours",

@@ -78,15 +78,6 @@ export function ProductCard({ product, minimal = false }: { product: Product; mi
         </button>
 
         <ProductTag product={product} className="pointer-events-none absolute left-3 top-3" />
-
-        {/* Hover quick button */}
-        <button
-          onClick={() => openQuickView(product)}
-          tabIndex={-1}
-          className="absolute inset-x-3 bottom-3 translate-y-[calc(100%+0.75rem)] rounded-full bg-acute-cream/95 py-3 text-[length:max(0.6875rem,10px)] font-semibold uppercase tracking-[0.2em] transition-[transform,background-color,color] duration-500 ease-soft hover:bg-acute-red hover:text-acute-cream group-hover:translate-y-0"
-        >
-          {t.quick.quickView}
-        </button>
       </div>
 
       <div className="mt-3 flex flex-col items-start gap-1 text-left">

@@ -188,17 +188,22 @@ export function CartDrawer() {
                     <dd className="tabular-nums">−{price(discount.amount)}</dd>
                   </div>
                 )}
+                {/* Right under the discount, so members see both perks of this order together */}
+                {member?.member && points > 0 && (
+                  <div className="flex justify-between gap-4 text-acute-red">
+                    <dt>{t.pointsEarned}</dt>
+                    <dd className="tabular-nums">{t.pointsValue(points.toLocaleString())}</dd>
+                  </div>
+                )}
                 <div className="flex items-baseline justify-between gap-4 border-t border-acute-line pt-3">
                   <dt className="eyebrow">{t.total}</dt>
                   <dd className="font-serif text-2xl tabular-nums">{price(total)}</dd>
                 </div>
               </dl>
 
-              {/* Members see the points this order earns; everyone else, what joining is worth */}
-              <p className="mt-3 flex items-baseline justify-between gap-4 text-xs">
-                <span className={member?.member ? "font-medium text-acute-ink" : "text-acute-ink-light"}>
-                  {member?.member ? t.earnPoints(points.toLocaleString()) : t.joinForDiscount}
-                </span>
+              {/* Non-members see what joining is worth */}
+              <p className={cn("mt-3 flex items-baseline gap-4 text-xs", member?.member ? "justify-end" : "justify-between")}>
+                {!member?.member && <span className="text-acute-ink-light">{t.joinForDiscount}</span>}
                 <Link
                   href="/membership"
                   onClick={close}

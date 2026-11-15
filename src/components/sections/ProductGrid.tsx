@@ -45,7 +45,7 @@ export function ProductGrid({ products, initialCategory = "all", preview = false
     visible.length > 4 ? "" : visible.length > 3 ? "desk:hidden" : visible.length > 2 ? "tab:hidden" : null;
 
   return (
-    <section id="shop" className={cn("container-acute", preview ? "py-12 tab:py-14 desk:py-16" : "pb-12 pt-10 tab:pt-12 desk:pb-16 desk:pt-14")}>
+    <section id="shop" className={cn("container-acute", preview ? "pb-12 pt-8 tab:pb-14 tab:pt-10 desk:pb-16 desk:pt-12" : "pb-12 pt-10 tab:pt-12 desk:pb-16 desk:pt-14")}>
       {/* Home: no visible heading, the products lead straight on from the hero */}
       {preview ? (
         <h2 className="sr-only">{t.home.shop.title}</h2>
@@ -87,7 +87,7 @@ export function ProductGrid({ products, initialCategory = "all", preview = false
             ))}
           </div>
           {preview && seeMoreClass !== null && (
-            <div className={cn("mt-10 flex justify-center", seeMoreClass)}>
+            <div className={cn("mt-6 flex justify-center tab:mt-8", seeMoreClass)}>
               <Link href="/products" className="btn-outline group">
                 {t.catalog.seeMore}
                 <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />

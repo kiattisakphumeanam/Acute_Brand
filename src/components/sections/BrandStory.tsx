@@ -6,9 +6,7 @@ import { cn } from "@/lib/utils";
 export function ValueCard({ index, title, body, className }: { index: number; title: string; body: string; className?: string }) {
   return (
     <article className={cn("rv rounded-card border border-acute-line bg-acute-cream-light p-6", className)}>
-      <span className="hex flex h-11 w-12 items-center justify-center bg-acute-blue font-serif text-lg text-acute-red">
-        0{index + 1}
-      </span>
+      <span className="font-serif text-lg tabular-nums text-acute-red">0{index + 1}</span>
       <h3 className="caps mt-4 text-[1.5rem] desk:text-[1.75rem]">{title}</h3>
       <p className="mt-3 text-[0.9375rem] leading-relaxed text-acute-ink-light">{body}</p>
     </article>

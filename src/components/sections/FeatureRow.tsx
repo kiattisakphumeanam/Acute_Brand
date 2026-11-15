@@ -13,9 +13,7 @@ export async function FeatureRow() {
           const Icon = icons[i];
           return (
             <li key={f.title} className="flex flex-col items-center px-3 text-center">
-              <span className="hex flex h-14 w-16 items-center justify-center bg-acute-blue text-acute-red">
-                <Icon className="h-5 w-5" strokeWidth={1.4} />
-              </span>
+              <Icon className="h-6 w-6 text-acute-red" strokeWidth={1.3} aria-hidden />
               <p className="mt-4 text-[length:max(0.75rem,10px)] font-semibold uppercase tracking-[0.2em]">{f.title}</p>
               <p className="mt-1.5 text-[0.8125rem] text-acute-ink-light">{f.body}</p>
             </li>

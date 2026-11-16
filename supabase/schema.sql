@@ -25,9 +25,58 @@
     add column if not exists role text not null default 'customer' check (role in ('customer', 'admin'));
 
   -- Membership: set from the account page's "Connect membership" popup. member_since marks a connected member.
+  -- Cancelling sets member_cancelled_at (and clears phone and birthday) but keeps member_since, so rejoining
+  -- doesn't hand out the first-order discount again; rejoining clears member_cancelled_at.
   alter table public.profiles
-    add column if not exists birthday     date,
-    add column if not exists member_since timestamptz;
+    add column if not exists birthday            date,
+    add column if not exists member_since        timestamptz,
+    add column if not exists member_cancelled_at timestamptz;
+
+  -- Customer number (ac-001, ac-002, …): given once, the first time a profile becomes a member, and never changed.
+  -- Not in the column grants below, so users can't set or edit their own.
+  create sequence if not exists public.customer_id_seq;
+  alter table public.profiles
+    add column if not exists customer_id text unique;
+
+  create or replace function public.next_customer_id()
+  returns text
+  language sql security definer set search_path = public
+  as $$
+    -- Three digits at least, then grows: ac-999 → ac-1000 (lpad alone would cut 1000 down to 100)
+    select 'ac-' || case when n < 1000 then lpad(n::text, 3, '0') else n::text end
+    from (select nextval('public.customer_id_seq') as n) s;
+  $$;
+
+  create or replace function public.assign_customer_id()
+  returns trigger
+  language plpgsql security definer set search_path = public
+  as $$
+  begin
+    if new.member_since is not null and new.customer_id is null then
+      new.customer_id := public.next_customer_id();
+    end if;
+    return new;
+  end;
+  $$;
+
+  drop trigger if exists assign_customer_id on public.profiles;
+  create trigger assign_customer_id
+    before insert or update on public.profiles
+    for each row execute function public.assign_customer_id();
+
+  -- Members who joined before customer numbers existed: numbered in the order they joined
+  do $$
+  declare r record;
+  begin
+    for r in
+      select id from public.profiles
+      where member_since is not null and customer_id is null
+      order by member_since, id
+    loop
+      update public.profiles set customer_id = public.next_customer_id() where id = r.id;
+    end loop;
+  end;
+  $$;
 
   -- Role lookup used by RLS policies. SECURITY DEFINER avoids RLS recursion on profiles.
   create or replace function public.is_admin()
@@ -55,6 +104,11 @@
     after insert on auth.users
     for each row execute function public.handle_new_user();
 
+  -- Accounts created before the trigger existed have no profile, so saving membership has no row to update
+  insert into public.profiles (id, full_name)
+  select id, raw_user_meta_data ->> 'full_name' from auth.users
+  on conflict (id) do nothing;
+
   alter table public.profiles enable row level security;
 
   drop policy if exists "Users read own profile"   on public.profiles;
@@ -67,7 +121,7 @@
 
   -- Users may edit their name, phone and membership details but never their own role.
   revoke update on public.profiles from authenticated;
-  grant update (full_name, phone, birthday, member_since) on public.profiles to authenticated;
+  grant update (full_name, phone, birthday, member_since, member_cancelled_at) on public.profiles to authenticated;
 
   -- ─────────────────────────────────────────────
   -- Products

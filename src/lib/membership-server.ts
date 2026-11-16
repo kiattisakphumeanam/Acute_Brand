@@ -12,7 +12,7 @@ export async function getMemberStatus(userId: string): Promise<MemberStatus | nu
   if (!supabase) return null;
 
   const [{ data: profile }, { data: orders }] = await Promise.all([
-    supabase.from("profiles").select("member_since").eq("id", userId).single(),
+    supabase.from("profiles").select("member_since, member_cancelled_at").eq("id", userId).single(),
     // RLS limits this to the user's own orders
     supabase
       .from("orders")
@@ -23,7 +23,8 @@ export async function getMemberStatus(userId: string): Promise<MemberStatus | nu
 
   const paid = orders ?? [];
   const since = profile?.member_since ? new Date(profile.member_since).getTime() : null;
-  const member = since !== null;
+  // Cancelled members keep their join date (for the first-order rule) but get no member pricing
+  const member = since !== null && !profile?.member_cancelled_at;
   // "First order" means first since joining — buying before becoming a member doesn't use it up
   const paidOrders = since === null ? 0 : paid.filter((o) => new Date(o.created_at).getTime() >= since).length;
 

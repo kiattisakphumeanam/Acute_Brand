@@ -22,6 +22,8 @@ type Profile = {
   phone: string | null;
   birthday: string | null;
   member_since: string | null;
+  member_cancelled_at: string | null;
+  customer_id: string | null;
 };
 
 type Props = { searchParams: Promise<{ connect?: string; tab?: string }> };
@@ -57,10 +59,10 @@ export default async function AccountPage({ searchParams }: Props) {
   // Null until supabase/schema.sql's membership columns exist
   const { data: profile } = ((await supabase
     ?.from("profiles")
-    .select("full_name, phone, birthday, member_since")
+    .select("full_name, phone, birthday, member_since, member_cancelled_at, customer_id")
     .eq("id", user.id)
     .single()) ?? { data: null }) as { data: Profile | null };
-  const connected = Boolean(profile?.member_since);
+  const connected = Boolean(profile?.member_since) && !profile?.member_cancelled_at;
   const formatDate = (iso: string) => new Date(iso).toLocaleDateString("en-GB", { dateStyle: "medium" });
 
   return (
@@ -115,6 +117,12 @@ export default async function AccountPage({ searchParams }: Props) {
               </h2>
               {connected && profile ? (
                 <dl className="mt-5 grid gap-x-10 gap-y-3 text-sm tab:grid-cols-[auto_1fr]">
+                  {profile.customer_id && (
+                    <>
+                      <dt className="text-acute-ink/60">Member no.</dt>
+                      <dd className="uppercase tracking-[0.1em]">{profile.customer_id}</dd>
+                    </>
+                  )}
                   <dt className="text-acute-ink/60">Member since</dt>
                   <dd>{formatDate(profile.member_since!)}</dd>
                   {profile.birthday && (
@@ -131,8 +139,10 @@ export default async function AccountPage({ searchParams }: Props) {
                   )}
                 </dl>
               ) : (
-                <p className="mt-3 text-sm leading-relaxed text-acute-ink/70">
-                  Add your birthday and phone number to start collecting points, from Morning Tea up to ACUTE.{" "}
+                <p className="mt-3 max-w-xl text-sm leading-relaxed text-acute-ink/70">
+                  {profile?.member_cancelled_at
+                    ? `You left on ${formatDate(profile.member_cancelled_at)}. Welcome back any time: rejoin to keep your member number${profile.customer_id ? ` (${profile.customer_id})` : ""} and your points.`
+                    : "Add your birthday and phone number to start collecting points, from Morning Tea up to ACUTE."}{" "}
                   <Link href="/membership" className="underline underline-offset-4 hover:text-acute-red">
                     About membership
                   </Link>

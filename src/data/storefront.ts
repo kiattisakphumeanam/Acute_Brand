@@ -76,20 +76,6 @@ export const MENU: MenuGroup[] = [
       },
     ],
   },
-  {
-    label: "Info",
-    href: "/about",
-    feature: { title: "The Circle", image: "/moments/evening.jpg", href: "/signup" },
-    columns: [
-      {
-        title: "ACUTE",
-        links: [
-          { label: "About", href: "/about" },
-          { label: "Membership", href: "/signup" },
-        ],
-      },
-    ],
-  },
 ];
 
 export const SOCIALS = [

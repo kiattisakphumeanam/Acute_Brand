@@ -4,10 +4,11 @@ const config: Config = {
   content: ["./src/**/*.{ts,tsx}"],
   theme: {
     extend: {
-      // Brand breakpoints — tablet 760px, desktop 1040px
+      // Brand breakpoints — tablet 760px, desktop 1040px, wide desktop 1600px
       screens: {
         tab: "760px",
         desk: "1040px",
+        wide: "1600px",
       },
       colors: {
         acute: {

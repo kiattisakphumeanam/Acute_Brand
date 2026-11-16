@@ -29,8 +29,8 @@ export function MegaMenu({ active, onEnter, onLeave, onNavigate }: Props) {
     >
       {MENU.map((group, i) => active === i && (
         <div key={group.label} className="grid desk:grid-cols-[45fr_55fr]">
-          {/* Left edge lines up with the header's container (max 85rem, 3rem gutter) */}
-          <div className="flex gap-16 px-8 py-10 desk:gap-20 desk:border-r desk:border-acute-line desk:py-12 desk:pl-[max(3rem,calc((100vw-85rem)/2+3rem))] desk:pr-12">
+          {/* Left edge lines up with the header's container (max 160rem, 3rem gutter, 4rem on wide) */}
+          <div className="flex gap-16 px-8 py-10 desk:gap-20 desk:border-r desk:border-acute-line desk:py-12 desk:pl-12 desk:pr-12 wide:pl-[max(4rem,calc((100vw-160rem)/2+4rem))]">
             {group.columns.map((col) => (
               <div key={col.title}>
                 <p className="eyebrow">{col.title}</p>

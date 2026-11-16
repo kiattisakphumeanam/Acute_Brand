@@ -42,7 +42,14 @@
 
 @layer components {
   .container-acute {
-    @apply mx-auto w-full max-w-[85rem] px-5 tab:px-8 desk:px-12;
+    /* Fluid with the viewport; the cap only stops lines running away on ultra-wide (>2560px) monitors */
+    @apply mx-auto w-full max-w-[160rem] px-5 tab:px-8 desk:px-12;
+  }
+  /* Matches the `wide` screen in tailwind.config.ts */
+  @media (min-width: 1600px) {
+    .container-acute {
+      @apply px-16;
+    }
   }
 
   /* Headings — serif 500, uppercase, tight leading */

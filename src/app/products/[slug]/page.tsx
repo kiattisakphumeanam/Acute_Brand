@@ -33,7 +33,7 @@ export default async function ProductPage({ params }: Props) {
   const related = [
     ...others.filter((p) => p.category === product.category),
     ...others.filter((p) => p.category !== product.category),
-  ].slice(0, 4);
+  ].slice(0, 5);
 
   return (
     <div className="container-acute pb-12 pt-10 tab:pt-12 desk:pb-16 desk:pt-14">
@@ -57,10 +57,10 @@ export default async function ProductPage({ params }: Props) {
       {related.length > 0 && (
         <section className="mt-12 desk:mt-16">
           <h2 className="heading-section">{t.product.related}</h2>
-          <div className="mt-8 grid grid-cols-2 gap-x-3 gap-y-8 tab:mt-10 tab:grid-cols-3 tab:gap-x-5 desk:grid-cols-4 desk:gap-x-6">
-            {/* One row at every breakpoint: 2, 3 and 4 columns */}
+          <div className="mt-8 grid grid-cols-2 gap-x-3 gap-y-8 tab:mt-10 tab:grid-cols-3 tab:gap-x-5 desk:grid-cols-4 desk:gap-x-6 wide:grid-cols-5">
+            {/* One row at every breakpoint: 2, 3, 4 and 5 columns */}
             {related.map((p, i) => (
-              <div key={p.id} className={i >= 3 ? "hidden desk:block" : i >= 2 ? "hidden tab:block" : ""}>
+              <div key={p.id} className={i >= 4 ? "hidden wide:block" : i >= 3 ? "hidden desk:block" : i >= 2 ? "hidden tab:block" : ""}>
                 <ProductCard product={p} />
               </div>
             ))}

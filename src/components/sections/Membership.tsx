@@ -2,8 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Check, Plus } from "lucide-react";
 import { HeroVideo } from "@/components/sections/HeroVideo";
-import { getHeroVideo } from "@/lib/hero-video";
 import { getDictionary } from "@/lib/i18n/server";
+import { getMembershipMedia } from "@/lib/site-media";
 import { cn } from "@/lib/utils";
 
 /** Membership is connected from the account page — signed-out visitors sign in or sign up on the way. */
@@ -16,18 +16,18 @@ async function JoinLink({ className }: { className: string }) {
   );
 }
 
-/** Same footage as the home hero's first slide (public/videos/hero.mp4), with a photo when there is no video.
+/** Banner set in /admin/media; until then the home hero's footage, or a photo when there is no video.
  *  Slides up under the header, which rests transparent over it (see Header). */
 export async function MembershipHero() {
   const { membership: t, home: { hero: h } } = await getDictionary();
-  const video = getHeroVideo();
+  const { video, photo } = await getMembershipMedia();
 
   return (
     <section className="relative isolate -mt-[var(--header-h)] flex h-[calc(26rem+var(--header-h))] items-end overflow-hidden bg-acute-ink text-acute-cream tab:h-[calc(30rem+var(--header-h))]">
       {video ? (
         <HeroVideo video={video} pauseLabel={h.pauseVideo} playLabel={h.playVideo} />
       ) : (
-        <Image src="/story/story1.jpg" alt="" fill priority sizes="100vw" className="object-cover object-[center_30%]" />
+        <Image src={photo} alt="" fill priority sizes="100vw" className="object-cover object-[center_30%]" />
       )}
       {/* Same shading as the home hero: the lower left for the copy, the top for the white header */}
       <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-acute-ink/70 via-acute-ink/20 to-transparent" />

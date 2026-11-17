@@ -33,7 +33,8 @@ export function CountBadge({ count }: { count: number }) {
   );
 }
 
-export function Header() {
+/** `menuImages`: mega menu photos uploaded in /admin/media, by group label (see getMenuImages). */
+export function Header({ menuImages }: { menuImages: Record<string, string> }) {
   const user = useUser();
   const pathname = usePathname();
   const { t } = useTranslation();
@@ -214,6 +215,7 @@ export function Header() {
         </nav>
 
         <MegaMenu
+          images={menuImages}
           active={active}
           onEnter={() => clearTimeout(closeTimer.current)}
           onLeave={scheduleClose}

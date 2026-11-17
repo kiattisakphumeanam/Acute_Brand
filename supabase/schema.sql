@@ -221,6 +221,50 @@
     on storage.objects for delete using (bucket_id = 'products' and public.is_admin());
 
   -- ─────────────────────────────────────────────
+  -- Site media — photos and videos for the storefront's sections, managed in /admin/media.
+  -- One row per slot; the slots themselves (and their fallback files in public/) live in
+  -- src/data/site-media.ts, so admins choose what fills a place but not where places are.
+  -- ─────────────────────────────────────────────
+  create table if not exists public.site_media (
+    slot        text primary key,                            -- e.g. 'home.hero', 'moments.work'
+    kind        text not null check (kind in ('image', 'video')),
+    url         text not null,                               -- main file (desktop, or every screen without a mobile one)
+    mobile_url  text,                                        -- optional portrait cut for phones
+    poster_url  text,                                        -- videos: still frame shown while loading
+    alt_en      text not null default '',
+    alt_th      text not null default '',
+    updated_at  timestamptz not null default now()
+  );
+
+  alter table public.site_media enable row level security;
+
+  drop policy if exists "Site media is public"      on public.site_media;
+  drop policy if exists "Admins manage site media"  on public.site_media;
+
+  create policy "Site media is public"
+    on public.site_media for select using (true);
+  create policy "Admins manage site media"
+    on public.site_media for all
+    using (public.is_admin())
+    with check (public.is_admin());
+
+  -- Public "site-media" bucket. 50 MB is the largest single file Supabase's free plan accepts.
+  -- /admin/media uploads straight from the browser with a signed URL, so big videos never pass through the app.
+  insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+  values ('site-media', 'site-media', true, 52428800,
+    array['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'video/mp4', 'video/webm'])
+  on conflict (id) do update
+    set public = true, file_size_limit = excluded.file_size_limit, allowed_mime_types = excluded.allowed_mime_types;
+
+  drop policy if exists "Site media files are public"   on storage.objects;
+  drop policy if exists "Admins delete site media files" on storage.objects;
+
+  create policy "Site media files are public"
+    on storage.objects for select using (bucket_id = 'site-media');
+  create policy "Admins delete site media files"
+    on storage.objects for delete using (bucket_id = 'site-media' and public.is_admin());
+
+  -- ─────────────────────────────────────────────
   -- Orders — written only by the Stripe webhook (service role)
   -- ─────────────────────────────────────────────
   create table if not exists public.orders (

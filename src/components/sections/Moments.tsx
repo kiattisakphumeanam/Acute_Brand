@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { EditorialPlaceholder, type PlaceholderTone } from "@/components/ui/EditorialPlaceholder";
 import { getDictionary } from "@/lib/i18n/server";
-import { momentImages } from "@/lib/product-images";
+import { getMomentImages } from "@/lib/site-media";
 import { MOMENTS, type Moment } from "@/types/product";
 
 const tone: Record<Moment, PlaceholderTone> = {
@@ -15,8 +15,8 @@ const tone: Record<Moment, PlaceholderTone> = {
 
 export async function Moments() {
   const { home: { moments: t } } = await getDictionary();
-  // Drop a photo in public/moments/ (work.jpg, weekend.jpg, …) to replace a placeholder
-  const images = momentImages();
+  // Set in /admin/media; public/moments/ (work.jpg, weekend.jpg, …) until then, else a placeholder
+  const images = await getMomentImages();
 
   return (
     <section id="moments" className="container-acute py-12 tab:py-14 desk:py-16">
@@ -33,8 +33,8 @@ export async function Moments() {
                 {images[m] ? (
                   <div className="relative aspect-[4/5] w-full">
                     <Image
-                      src={images[m]}
-                      alt={m}
+                      src={images[m].src}
+                      alt={images[m].alt}
                       fill
                       sizes="(min-width: 1040px) 25vw, (min-width: 760px) 50vw, 100vw"
                       className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"

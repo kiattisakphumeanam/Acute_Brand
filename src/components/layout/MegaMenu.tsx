@@ -7,6 +7,8 @@ import { MENU } from "@/data/storefront";
 import { cn } from "@/lib/utils";
 
 interface Props {
+  /** Uploaded photos by group label; others use feature.image */
+  images: Record<string, string>;
   active: number | null;
   onEnter: () => void;
   onLeave: () => void;
@@ -14,7 +16,7 @@ interface Props {
 }
 
 /** Full-width dropdown under the desktop nav: link columns on the left, a full-bleed featured photo on the right. */
-export function MegaMenu({ active, onEnter, onLeave, onNavigate }: Props) {
+export function MegaMenu({ images, active, onEnter, onLeave, onNavigate }: Props) {
   const { t } = useTranslation();
 
   return (
@@ -58,7 +60,7 @@ export function MegaMenu({ active, onEnter, onLeave, onNavigate }: Props) {
           >
             {/* Wider than the panel: the square lookbook photos carry white side margins (~11%) that would show here */}
             <div className="absolute inset-y-0 -inset-x-[16%] transition-transform duration-700 ease-soft group-hover:scale-[1.03]">
-              <Image src={group.feature.image} alt="" fill sizes="75vw" className="object-cover object-[50%_15%]" />
+              <Image src={images[group.label] ?? group.feature.image} alt="" fill sizes="75vw" className="object-cover object-[50%_15%]" />
             </div>
             {/* Darkens the lower edge just enough for white type on light photos */}
             <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-acute-ink/65 via-acute-ink/15 to-transparent" />

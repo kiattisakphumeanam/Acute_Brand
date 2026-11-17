@@ -19,6 +19,7 @@ import { CURRENCY_COOKIE, isCurrency } from "@/data/storefront";
 import { getCurrentUser } from "@/lib/auth";
 import { getLocale } from "@/lib/i18n/server";
 import { getProducts } from "@/lib/products";
+import { getMenuImages } from "@/lib/site-media";
 import "./globals.css";
 
 // Headings — web stand-in for the brand's Minion display face
@@ -50,11 +51,12 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const [user, locale, products, cookieStore] = await Promise.all([
+  const [user, locale, products, cookieStore, menuImages] = await Promise.all([
     getCurrentUser(),
     getLocale(),
     getProducts(),
     cookies(),
+    getMenuImages(),
   ]);
   const savedCurrency = cookieStore.get(CURRENCY_COOKIE)?.value;
 
@@ -66,7 +68,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <AuthProvider user={user}>
             <CartProvider>
               <PromoMarquee />
-              <Header />
+              <Header menuImages={menuImages} />
               <main>{children}</main>
               <Footer />
               <PhilosophyMarquee />

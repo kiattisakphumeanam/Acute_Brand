@@ -35,9 +35,14 @@ export default async function AdminProductsPage() {
             Products <span className="text-acute-stone">({products.length})</span>
           </h1>
         </div>
-        <Link href="/admin/products/new" className="btn-primary">
-          <Plus className="h-4 w-4" /> Add product
-        </Link>
+        <div className="flex flex-wrap gap-3">
+          <Link href="/admin/media" className="btn-outline">
+            Site media
+          </Link>
+          <Link href="/admin/products/new" className="btn-primary">
+            <Plus className="h-4 w-4" /> Add product
+          </Link>
+        </div>
       </div>
 
       {!supabase && <p className="mt-10 text-sm text-acute-red">Supabase isn&apos;t configured. Add the keys to .env.local.</p>}

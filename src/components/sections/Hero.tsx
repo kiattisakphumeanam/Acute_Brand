@@ -7,39 +7,36 @@ import { LaunchCountdown } from "@/components/sections/LaunchCountdown";
 import { OfferBanner } from "@/components/sections/OfferBanner";
 import { EditorialPlaceholder } from "@/components/ui/EditorialPlaceholder";
 import { LAUNCH_AT } from "@/data/storefront";
-import { getHeroVideo, getSlideVideo } from "@/lib/hero-video";
+import type { HeroVideoFiles } from "@/lib/hero-video";
 import { getDictionary } from "@/lib/i18n/server";
-import { slideImage } from "@/lib/product-images";
+import { getHeroMedia, getLaunchMedia } from "@/lib/site-media";
 
 /** First screen: the campaign hero, then the member offer and the next launch, as one slideshow. */
 export async function Hero() {
-  const video = getHeroVideo();
-  // public/videos/hero3.mp4 when there is one, else public/slides/launch.jpg, else a Moments photo
-  const launchVideo = getSlideVideo("hero3");
-  const launchPhoto = slideImage("launch", "Work");
+  // Set in /admin/media; files in public/ stand in until something is uploaded (src/lib/site-media.ts)
+  const [video, launch] = await Promise.all([getHeroMedia(), getLaunchMedia()]);
 
   return (
     <HeroCarousel
       slides={[
-        { key: "campaign", tone: video ? "dark" : "light", node: video ? <VideoSlide /> : <StillSlide /> },
+        { key: "campaign", tone: video ? "dark" : "light", node: video ? <VideoSlide video={video} /> : <StillSlide /> },
         { key: "offer", tone: "dark", node: <OfferBanner /> },
         {
           key: "launch",
           // Full-bleed video reads like the first slide; the photo version is light blue
-          tone: launchVideo ? "dark" : launchPhoto ? "light-on-phones" : "light",
+          tone: launch.video ? "dark" : launch.photo ? "light-on-phones" : "light",
           hash: "launch",
-          node: <LaunchCountdown launchAt={LAUNCH_AT} photo={launchPhoto} video={launchVideo} />,
+          node: <LaunchCountdown launchAt={LAUNCH_AT} photo={launch.photo} video={launch.video} />,
         },
       ]}
     />
   );
 }
 
-// Full-bleed video version — used as soon as public/videos/hero.mp4 exists.
+// Full-bleed video version — used as soon as there is a hero video (uploaded, or public/videos/hero.mp4).
 // Below tablet the copy sits higher to leave room for the slideshow controls under it.
-async function VideoSlide() {
+async function VideoSlide({ video }: { video: HeroVideoFiles }) {
   const { home: { hero: t } } = await getDictionary();
-  const video = getHeroVideo()!;
 
   return (
     <div className="relative isolate flex h-full items-end overflow-hidden text-acute-cream">

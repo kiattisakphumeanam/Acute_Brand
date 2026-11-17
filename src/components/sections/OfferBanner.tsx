@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { SlidePhoto } from "@/components/sections/SlidePhoto";
 import { getDictionary } from "@/lib/i18n/server";
-import { slideImage } from "@/lib/product-images";
+import { getOfferPhoto } from "@/lib/site-media";
 
 /** Hero slide — free tote member offer on ACUTE Red. */
 export async function OfferBanner() {
   const { home: { offer: t } } = await getDictionary();
-  // public/slides/offer.jpg when there is one; a Moments photo until then
-  const photo = slideImage("offer", "Evening");
+  // Set in /admin/media; public/slides/offer.jpg or a Moments photo until then
+  const photo = await getOfferPhoto();
 
   return (
     <div className="relative flex h-full flex-col bg-acute-red text-acute-cream tab:block">

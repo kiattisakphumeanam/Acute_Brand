@@ -1,15 +1,15 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Loader2, Minus, Plus, X } from "lucide-react";
-import { createCheckoutSession } from "@/app/actions/checkout";
+import { Minus, Plus, X } from "lucide-react";
 import { ProductImage } from "@/components/product/ProductImage";
+import { CartTotals, MemberNote } from "@/components/cart/CartTotals";
 import { useCart } from "@/components/cart/CartProvider";
 import { useTranslation } from "@/components/i18n/LanguageProvider";
 import { getMyMemberStatus } from "@/app/actions/membership";
 import { FREE_TOTE_THB } from "@/data/storefront";
-import { memberDiscount, pointsFor, type MemberStatus } from "@/lib/membership";
+import type { MemberStatus } from "@/lib/membership";
 import { usePrice } from "@/lib/ui-store";
 import { cn } from "@/lib/utils";
 
@@ -17,8 +17,6 @@ export function CartDrawer() {
   const { lines, subtotal, count, isOpen, close, setQuantity, remove } = useCart();
   const { t: { cart: t, categories } } = useTranslation();
   const price = usePrice();
-  const [isPending, startTransition] = useTransition();
-  const [error, setError] = useState<string | null>(null);
   const [member, setMember] = useState<MemberStatus | null>(null);
 
   // Re-checked each time the bag opens — a finished order or a new membership changes the discount
@@ -45,24 +43,8 @@ export function CartDrawer() {
     };
   }, [isOpen, close]);
 
-  const checkout = () => {
-    setError(null);
-    startTransition(async () => {
-      const result = await createCheckoutSession(
-        lines.map(({ id, quantity, size }) => ({ id, quantity, size })),
-      );
-      if ("url" in result) window.location.assign(result.url);
-      else setError(result.error);
-    });
-  };
-
   const toteProgress = Math.min(subtotal / FREE_TOTE_THB, 1);
   const remaining = Math.max(FREE_TOTE_THB - subtotal, 0);
-
-  // Same rule checkout applies (src/lib/membership.ts), so the total here is what Stripe charges
-  const discount = memberDiscount(subtotal, member);
-  const total = subtotal - (discount?.amount ?? 0);
-  const points = pointsFor(subtotal, member);
 
   return (
     <div className={cn("fixed inset-0 z-[60] overflow-hidden", !isOpen && "pointer-events-none")} inert={!isOpen}>
@@ -173,55 +155,13 @@ export function CartDrawer() {
             </ul>
 
             <footer className="border-t border-acute-line px-6 py-6">
-              <dl className="space-y-1.5 text-sm">
-                <div className="flex justify-between gap-4">
-                  <dt className="text-acute-ink-light">{t.subtotal}</dt>
-                  <dd className="tabular-nums">{price(subtotal)}</dd>
-                </div>
-                {discount && (
-                  <div className="flex justify-between gap-4 text-acute-red">
-                    <dt>
-                      {discount.kind === "first_order"
-                        ? t.discountFirst(discount.rate * 100)
-                        : t.discountTier(discount.tier, discount.rate * 100)}
-                    </dt>
-                    <dd className="tabular-nums">−{price(discount.amount)}</dd>
-                  </div>
-                )}
-                {/* Right under the discount, so members see both perks of this order together */}
-                {member?.member && points > 0 && (
-                  <div className="flex justify-between gap-4 text-acute-red">
-                    <dt>{t.pointsEarned}</dt>
-                    <dd className="tabular-nums">{t.pointsValue(points.toLocaleString())}</dd>
-                  </div>
-                )}
-                <div className="flex items-baseline justify-between gap-4 border-t border-acute-line pt-3">
-                  <dt className="eyebrow">{t.total}</dt>
-                  <dd className="font-serif text-2xl tabular-nums">{price(total)}</dd>
-                </div>
-              </dl>
+              <CartTotals subtotal={subtotal} member={member} />
 
-              {/* Non-members see what joining is worth */}
-              <p className={cn("mt-3 flex items-baseline gap-4 text-xs", member?.member ? "justify-end" : "justify-between")}>
-                {!member?.member && <span className="text-acute-ink-light">{t.joinForDiscount}</span>}
-                <Link
-                  href="/membership"
-                  onClick={close}
-                  className="shrink-0 text-[length:max(0.6875rem,10px)] font-semibold uppercase tracking-[0.2em] text-acute-ink-light underline-offset-4 hover:text-acute-red hover:underline"
-                >
-                  {t.memberDetails}
-                </Link>
-              </p>
+              <MemberNote subtotal={subtotal} member={member} onNavigate={close} />
               <p className="mt-1.5 text-xs text-acute-ink-light">{t.shippingNote}</p>
-              {error && (
-                <p role="alert" className="mt-4 text-sm text-acute-red">
-                  {error}
-                </p>
-              )}
-              <button onClick={checkout} disabled={isPending} className="btn-primary mt-5 w-full">
-                {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-                {isPending ? t.redirecting : t.checkout}
-              </button>
+              <Link href="/checkout" onClick={close} className="btn-primary mt-5 w-full">
+                {t.checkout}
+              </Link>
             </footer>
           </>
         )}

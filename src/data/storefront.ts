@@ -89,6 +89,13 @@ export const LAUNCH_AT = "2026-12-12T10:00:00+07:00";
 /** Spend this much (THB) for the free tote. */
 export const FREE_TOTE_THB = 4000;
 
+/** Delivery choices on /checkout (a mockup until Stripe is wired in). Not charged anywhere yet; labels live in the dictionary. */
+export const SHIPPING_OPTIONS = [
+  { id: "standard", priceTHB: 0, days: "2–4" },
+  { id: "express", priceTHB: 150, days: "1–2" },
+] as const;
+export type ShippingOptionId = (typeof SHIPPING_OPTIONS)[number]["id"];
+
 export const CURRENCIES = {
   THB: { symbol: "฿", rate: 1 },
   USD: { symbol: "$", rate: 1 / 35.5 },

@@ -86,7 +86,7 @@ export async function createCheckoutSession(items: CheckoutItem[]): Promise<Chec
       shipping_address_collection: { allowed_countries: ["TH"] },
       // Payment methods (cards, PromptPay, etc.) come from your Stripe Dashboard settings.
       success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/#shop`,
+      cancel_url: `${origin}/checkout`, // back to the review page, bag intact
     });
 
     if (!session.url) return { error: "Could not start checkout. Please try again." };

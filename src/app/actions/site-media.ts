@@ -181,3 +181,131 @@ export async function saveMediaAlt(slot: string, _prev: FormState, formData: For
   revalidateMedia();
   return { message: "Saved." };
 }
+
+// ─────────────────────────────────────────────
+// Lookbook — a list on /about, files under lookbook/ in the same bucket
+// ─────────────────────────────────────────────
+
+const MAX_LOOKS = 12;
+
+async function lookbookClient() {
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) throw new Error("Supabase isn't configured.");
+  return supabase;
+}
+
+/** Same two-step upload as the slots: a signed URL first, then addLook / replaceLookPhoto with the path. */
+export async function prepareLookUpload(type: string, size: number): Promise<{ path: string; token: string } | { error: string }> {
+  await requireAdmin();
+  const bucket = storage();
+  if (!bucket) return { error: "Add SUPABASE_SERVICE_ROLE_KEY to .env.local to upload media." };
+  const fileType = MEDIA_TYPES[type];
+  if (fileType?.kind !== "image") return { error: "Use a JPG, PNG, WebP or AVIF photo." };
+  if (size > fileType.maxMB * 1024 * 1024) return { error: `That photo is over ${fileType.maxMB} MB.` };
+
+  const path = `lookbook/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${fileType.ext}`;
+  const { data, error } = await bucket.createSignedUploadUrl(path);
+  if (error || !data) return { error: error?.message ?? "Couldn't start the upload." };
+  return { path: data.path, token: data.token };
+}
+
+const isLookPath = (path: string) => /^lookbook\/[\w-]+\.(jpg|png|webp|avif)$/.test(path);
+
+export async function addLook(path: string): Promise<FormState> {
+  await requireAdmin();
+  const bucket = storage();
+  if (!bucket || !isLookPath(path)) return { error: "Upload not recognised." };
+  try {
+    const supabase = await lookbookClient();
+    const { data: last, count } = await supabase
+      .from("lookbook_looks")
+      .select("sort_order", { count: "exact" })
+      .order("sort_order", { ascending: false })
+      .limit(1);
+    if ((count ?? 0) >= MAX_LOOKS) {
+      await bucket.remove([path]);
+      return { error: `The lookbook holds up to ${MAX_LOOKS} photos. Remove one first.` };
+    }
+    const { error } = await supabase
+      .from("lookbook_looks")
+      .insert({ url: bucket.getPublicUrl(path).data.publicUrl, sort_order: (last?.[0]?.sort_order ?? -1) + 1 });
+    if (error) {
+      await bucket.remove([path]);
+      return { error: `${error.message}. Have you run supabase/schema.sql?` };
+    }
+  } catch (err) {
+    return { error: (err as Error).message };
+  }
+  revalidateMedia();
+  return { message: "Added. Write a caption so it reads like the rest." };
+}
+
+export async function replaceLookPhoto(id: string, path: string): Promise<FormState> {
+  await requireAdmin();
+  const bucket = storage();
+  if (!bucket || !isLookPath(path)) return { error: "Upload not recognised." };
+  try {
+    const supabase = await lookbookClient();
+    const { data: look } = await supabase.from("lookbook_looks").select("url").eq("id", id).single();
+    const { error } = await supabase
+      .from("lookbook_looks")
+      .update({ url: bucket.getPublicUrl(path).data.publicUrl })
+      .eq("id", id);
+    if (error) {
+      await bucket.remove([path]);
+      return { error: error.message };
+    }
+    await removeFiles([look?.url ?? null]);
+  } catch (err) {
+    return { error: (err as Error).message };
+  }
+  revalidateMedia();
+  return { message: "Photo replaced." };
+}
+
+export async function updateLook(id: string, _prev: FormState, formData: FormData): Promise<FormState> {
+  await requireAdmin();
+  const field = (name: string) => String(formData.get(name) ?? "").trim().slice(0, 200);
+  try {
+    const supabase = await lookbookClient();
+    const { error } = await supabase
+      .from("lookbook_looks")
+      .update({
+        caption_en: field("caption_en"),
+        caption_th: field("caption_th"),
+        alt_en: field("alt_en"),
+        alt_th: field("alt_th"),
+      })
+      .eq("id", id);
+    if (error) return { error: error.message };
+  } catch (err) {
+    return { error: (err as Error).message };
+  }
+  revalidateMedia();
+  return { message: "Saved." };
+}
+
+/** Swaps a look with its neighbour (-1 earlier, +1 later), then renumbers the list 0, 1, 2, … */
+export async function moveLook(id: string, direction: -1 | 1) {
+  await requireAdmin();
+  const supabase = await lookbookClient();
+  const { data, error } = await supabase.from("lookbook_looks").select("id").order("sort_order").order("created_at");
+  if (error) throw new Error(error.message);
+  const ids = data.map((r) => r.id as string);
+  const from = ids.indexOf(id);
+  const to = from + direction;
+  if (from === -1 || to < 0 || to >= ids.length) return;
+  [ids[from], ids[to]] = [ids[to], ids[from]];
+  await Promise.all(ids.map((lookId, i) => supabase.from("lookbook_looks").update({ sort_order: i }).eq("id", lookId)));
+  revalidateMedia();
+}
+
+export async function deleteLook(id: string) {
+  await requireAdmin();
+  const supabase = await lookbookClient();
+  const { data: look } = await supabase.from("lookbook_looks").select("url").eq("id", id).single();
+  const { error } = await supabase.from("lookbook_looks").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+  await removeFiles([look?.url ?? null]);
+  revalidateMedia();
+}

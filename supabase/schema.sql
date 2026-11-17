@@ -248,6 +248,31 @@
     using (public.is_admin())
     with check (public.is_admin());
 
+  -- Lookbook on /about: a list admins add to, reorder and trim in /admin/media (files in the site-media bucket).
+  -- With no rows the section shows its placeholders and the dictionary's captions.
+  create table if not exists public.lookbook_looks (
+    id          uuid primary key default gen_random_uuid(),
+    url         text not null,
+    caption_en  text not null default '',                   -- e.g. "07:40 Commute"
+    caption_th  text not null default '',
+    alt_en      text not null default '',
+    alt_th      text not null default '',
+    sort_order  integer not null default 0,
+    created_at  timestamptz not null default now()
+  );
+
+  alter table public.lookbook_looks enable row level security;
+
+  drop policy if exists "Lookbook is public"      on public.lookbook_looks;
+  drop policy if exists "Admins manage lookbook"  on public.lookbook_looks;
+
+  create policy "Lookbook is public"
+    on public.lookbook_looks for select using (true);
+  create policy "Admins manage lookbook"
+    on public.lookbook_looks for all
+    using (public.is_admin())
+    with check (public.is_admin());
+
   -- Public "site-media" bucket. 50 MB is the largest single file Supabase's free plan accepts.
   -- /admin/media uploads straight from the browser with a signed URL, so big videos never pass through the app.
   insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)

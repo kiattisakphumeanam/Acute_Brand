@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { LookbookEditor } from "@/components/admin/LookbookEditor";
 import { MediaSlotEditor } from "@/components/admin/MediaSlotEditor";
 import { SITE_MEDIA } from "@/data/site-media";
 import { requireAdmin } from "@/lib/auth";
-import { fallbackMedia, type SiteMediaRow } from "@/lib/site-media";
+import { fallbackMedia, type LookbookLook, type SiteMediaRow } from "@/lib/site-media";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const metadata = { title: "Site media | Admin | ACUTE" };
@@ -14,8 +15,12 @@ export default async function AdminMediaPage() {
 
   // Read fresh (not the storefront's cache) so an upload shows here straight away
   const supabase = await createSupabaseServerClient();
-  const { data, error } = (await supabase?.from("site_media").select("*")) ?? { data: null, error: null };
+  const [{ data, error }, { data: lookData, error: lookError }] = await Promise.all([
+    supabase?.from("site_media").select("*") ?? { data: null, error: null },
+    supabase?.from("lookbook_looks").select("*").order("sort_order").order("created_at") ?? { data: null, error: null },
+  ]);
   const rows = new Map(((data ?? []) as SiteMediaRow[]).map((r) => [r.slot, r]));
+  const looks = (lookData ?? []) as LookbookLook[];
 
   return (
     <>
@@ -30,9 +35,9 @@ export default async function AdminMediaPage() {
       </p>
 
       {!supabase && <p className="mt-10 text-sm text-acute-red">Supabase isn&apos;t configured. Add the keys to .env.local.</p>}
-      {error && (
+      {(error ?? lookError) && (
         <p className="mt-10 text-sm text-acute-red">
-          Couldn&apos;t load site media: {error.message}. Have you run supabase/schema.sql in the SQL Editor?
+          Couldn&apos;t load site media: {(error ?? lookError)?.message}. Have you run supabase/schema.sql in the SQL Editor?
         </p>
       )}
 
@@ -47,6 +52,12 @@ export default async function AdminMediaPage() {
             {group.title}
           </a>
         ))}
+        <a
+          href="#lookbook"
+          className="text-[length:max(0.6875rem,10px)] font-semibold uppercase tracking-[0.2em] underline-offset-4 hover:text-acute-red hover:underline"
+        >
+          Lookbook
+        </a>
       </nav>
 
       {SITE_MEDIA.map((group) => (
@@ -70,6 +81,16 @@ export default async function AdminMediaPage() {
           </ul>
         </section>
       ))}
+
+      <section id="lookbook" className="mt-14 scroll-mt-28">
+        <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-acute-ink pb-3">
+          <h2 className="caps text-[1.75rem]">
+            Lookbook <span className="text-acute-stone">({looks.length})</span>
+          </h2>
+          <p className="text-xs uppercase tracking-[0.2em] text-acute-ink/60">/about, under Philosophy</p>
+        </div>
+        <LookbookEditor looks={looks} />
+      </section>
     </>
   );
 }

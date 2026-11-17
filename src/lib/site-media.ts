@@ -161,3 +161,45 @@ export async function getMenuImages(): Promise<Record<string, string>> {
   }
   return images;
 }
+
+export interface LookbookLook {
+  id: string;
+  url: string;
+  caption_en: string;
+  caption_th: string;
+  alt_en: string;
+  alt_th: string;
+  sort_order: number;
+}
+
+/** Throws on error so a failed fetch is never cached. */
+const fetchLookbook = unstable_cache(
+  async (): Promise<LookbookLook[]> => {
+    const supabase = getSupabase();
+    if (!supabase) throw new Error("Supabase is not configured");
+    const { data, error } = await supabase
+      .from("lookbook_looks")
+      .select("id, url, caption_en, caption_th, alt_en, alt_th, sort_order")
+      .order("sort_order")
+      .order("created_at");
+    if (error) throw new Error(error.message);
+    return data as LookbookLook[];
+  },
+  ["lookbook"],
+  { tags: [SITE_MEDIA_TAG], revalidate: 300 },
+);
+
+/** Lookbook photos with caption and alt text in the visitor's language (English when the Thai is blank). Empty → placeholders. */
+export async function getLookbook(): Promise<{ id: string; src: string; caption: string; alt: string }[]> {
+  if (!getSupabase()) return [];
+  try {
+    const th = (await getLocale()) === "th";
+    return (await fetchLookbook()).map((look) => {
+      const caption = (th && look.caption_th) || look.caption_en;
+      return { id: look.id, src: look.url, caption, alt: (th && look.alt_th) || look.alt_en || caption };
+    });
+  } catch (error) {
+    console.error("[site-media] Lookbook fetch failed, showing placeholders:", (error as Error).message);
+    return [];
+  }
+}
